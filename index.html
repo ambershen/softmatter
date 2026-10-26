@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#131315">
 <meta name="description" content="Soft Matter: four material typefaces drawn from knitting, piped chocolate, earphone cables and lace. Free to download.">
 <style>[hidden]{display:none!important} body{margin:0} img{max-width:100%}</style>
 <title>Soft Matter</title>
@@ -33,15 +34,11 @@
 @font-face{font-family:"Soft Matter Picot";src:url("fonts/SoftMatterPicot-Black.otf") format("opentype");font-weight:900;font-display:swap}
 /* Layout: a small type foundry site. Sticky masthead with three views: Typefaces (specimen sheets), Studio (export desk), In Use (a full demo site in its own fixed palette). */
 :root{
-  --bg:#eceef1; --panel:#f7f8fa; --ink:#14161b; --muted:#5a606b; --rule:#cfd4db; --accent:#2b44c9; --ok:#1f7a4d; --warn:#b3261e;
+  --bg:#131315; --panel:#1b1b1d; --ink:#ededeb; --muted:#9a9a96; --rule:#2a2a2c; --accent:#9aabff; --ok:#6fd3a0; --warn:#ff8a80; color-scheme:dark;
   --display:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;
   --body:"Hanken Grotesk","Helvetica Neue",system-ui,sans-serif;
   --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
 }
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){ --bg:#101216; --panel:#16191e; --ink:#e7e9ee; --muted:#9aa0ab; --rule:#2a2e36; --accent:#9aabff; --ok:#6fd3a0; --warn:#ff8a80; color-scheme:dark }
-}
-:root[data-theme="dark"]{ --bg:#101216; --panel:#16191e; --ink:#e7e9ee; --muted:#9aa0ab; --rule:#2a2e36; --accent:#9aabff; --ok:#6fd3a0; --warn:#ff8a80; color-scheme:dark }
 *{ box-sizing:border-box }
 body{ background:var(--bg); color:var(--ink); font-family:var(--body); font-size:15px; line-height:1.65; -webkit-font-smoothing:antialiased }
 .wrap{ max-width:1320px; margin:0 auto;
@@ -127,7 +124,8 @@ output{ font-family:var(--mono); font-size:12px; text-align:right; white-space:n
 #v-studio .note{ font-size:12.5px; color:var(--muted); margin:0 }
 #v-studio .proof{ min-width:0; display:flex; flex-direction:column; gap:10px }
 #v-studio .proofbar{ display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap }
-#v-studio .board{ border-radius:4px; overflow:hidden; background-color:var(--panel);
+#v-studio .board{ border-radius:4px; overflow:hidden; background-color:var(--bg) }
+#v-studio .board.checker{ background-color:var(--panel);
   background-image:linear-gradient(45deg,var(--rule) 25%,transparent 25%,transparent 75%,var(--rule) 75%),linear-gradient(45deg,var(--rule) 25%,transparent 25%,transparent 75%,var(--rule) 75%);
   background-size:16px 16px; background-position:0 0,8px 8px }
 #v-studio .board canvas{ display:block; width:100% }
@@ -225,6 +223,46 @@ output{ font-family:var(--mono); font-size:12px; text-align:right; white-space:n
   #v-in-use .hero .ctas{ justify-content:flex-start }
   #v-in-use .goods,#v-in-use .tix{ grid-template-columns:minmax(0,1fr) }
 }
+
+/* one ground for the whole demo: only the letters carry colour */
+#v-in-use{ --paper:#ffffff; --hair:#ecebe7 }
+#v-in-use .demo-note{ background:var(--paper); border-bottom:1px solid var(--hair) }
+#v-in-use .snav{ background:var(--paper); color:var(--sm-ink); border-bottom:1px solid var(--hair) }
+#v-in-use .demotag{ border-color:#d6d5d0; color:#77766f }
+#v-in-use .hero{ background:var(--paper); color:var(--sm-ink) }
+#v-in-use .hero .meta{ color:#77766f }
+#v-in-use .hero p.big{ color:var(--sm-ink) }
+#v-in-use .sbtn.fill{ background:var(--sm-ink); color:#ffffff; border-color:var(--sm-ink) }
+#v-in-use .knit,#v-in-use .cocoa,#v-in-use .lace,#v-in-use .listen,#v-in-use .tickets{ background:var(--paper) }
+#v-in-use .lace{ color:var(--sm-ink) }
+#v-in-use .lace p{ color:#4a4a47 }
+#v-in-use .lace .appt{ color:var(--sm-ink) }
+#v-in-use .lace dl{ border-top-color:var(--hair) }
+#v-in-use .lace dt{ color:#77766f }
+#v-in-use .good{ background:transparent; border:1px solid var(--hair) }
+#v-in-use .tickets{ color:var(--navy) }
+#v-in-use .tk{ border:1px solid var(--hair) }
+#v-in-use .tk p{ color:#5d5c58 }
+#v-in-use .tk.sel{ border-color:var(--navy); background:transparent }
+#v-in-use .sfoot{ background:var(--paper); color:#77766f; border-top:1px solid var(--hair) }
+#v-in-use .sig{ color:var(--sm-ink) }
+
+/* demo, dark edition */
+#v-in-use{ --paper:#131315; --sm-ink:#efeeea; --hair:#2a2a2c; --cocoa:#e9dcc8; --cocoa-soft:#b09a8d; --navy:#efe7d6; color-scheme:dark }
+#v-in-use .demo-note{ color:#9a9a96 }
+#v-in-use .demotag{ border-color:#3a3a3c; color:#9a9a96 }
+#v-in-use .hero .meta{ color:#9a9a96 }
+#v-in-use .sbtn.fill{ background:var(--sm-ink); color:var(--paper); border-color:var(--sm-ink) }
+#v-in-use .knit .head p,#v-in-use .good p{ color:#b9b8b2 }
+#v-in-use .good .gauge{ color:#8d8a82 }
+#v-in-use .menu li{ border-bottom-color:#3a3330 }
+#v-in-use .note{ border-color:#5a4d45 }
+#v-in-use .lace p{ color:#b9b8b2 }
+#v-in-use .lace dt{ color:#9a9a96 }
+#v-in-use .tracks li{ border-bottom-color:var(--hair) }
+#v-in-use .tracks .n,#v-in-use .tracks .dur{ color:#9a9a96 }
+#v-in-use .tk p{ color:#a9a8a2 }
+#v-in-use .sfoot{ color:#9a9a96 }
 </style>
 </head>
 <body>
@@ -317,7 +355,7 @@ output{ font-family:var(--mono); font-size:12px; text-align:right; white-space:n
 
   <header class="hero" id="sm-top">
     <div class="in"><div class="meta lbl"><span>Winter makers' market</span><span>Nov 14 – 15</span><span>10 am – 6 pm</span><span>Dogpatch Warehouse 3</span></div></div>
-    <div class="in"><canvas class="hl" data-font="tangle" data-text="soft matter" data-pal="0" data-weight="2" data-cap=".115" aria-label="soft matter"></canvas></div>
+    <div class="in"><canvas class="hl" data-font="tangle" data-text="soft matter" data-pal="0" data-weight="2" data-cap=".115" data-transparent="1" aria-label="soft matter"></canvas></div>
     <div class="in hero-grid">
       <p class="big">A weekend market that only sells soft things. Sweaters, hot cocoa, lace, and a listening room that only plays vinyl. Two days, forty stalls, and the colder it gets the better.</p>
       <div class="ctas"><button class="sbtn fill" type="button" data-go="sm-tickets">Tickets from $12</button><button class="sbtn" type="button" data-go="sm-knit">See what's on</button></div>
@@ -325,7 +363,7 @@ output{ font-family:var(--mono); font-size:12px; text-align:right; white-space:n
   </header>
 
   <section class="knit" id="sm-knit" aria-label="Knit stalls">
-    <canvas class="hl" data-font="purl" data-text="Knit Club" data-pal="0" data-weight="3" data-cap=".1" data-param="13" aria-label="Knit Club"></canvas>
+    <canvas class="hl" data-font="purl" data-text="Knit Club" data-pal="0" data-weight="3" data-cap=".1" data-param="13" data-transparent="1" aria-label="Knit Club"></canvas>
     <div class="in head">
       <p class="lbl" style="color:#8a7a62;margin:0">Stalls A1 – A12 · hand and machine knits</p>
       <p>Twelve knitting studios, everything ready to try on. The varsity cardigans can be knitted with your initials on the spot; expect about a 40-minute queue.</p>
@@ -368,7 +406,7 @@ output{ font-family:var(--mono); font-size:12px; text-align:right; white-space:n
   </section>
 
   <section class="listen" id="sm-listen" aria-label="Listening room">
-    <canvas class="hl" data-font="tangle" data-text="listening room" data-pal="1" data-weight="1" data-cap=".085" data-transparent="1" aria-label="listening room"></canvas>
+    <canvas class="hl" data-font="tangle" data-text="listening room" data-pal="0" data-weight="1" data-cap=".085" data-transparent="1" aria-label="listening room"></canvas>
     <div class="in wrap2">
       <aside>
         <p class="lbl" style="color:#7a7a77">Room C · every 45 minutes</p>
@@ -386,7 +424,7 @@ output{ font-family:var(--mono); font-size:12px; text-align:right; white-space:n
   </section>
 
   <section class="tickets" id="sm-tickets" aria-label="Tickets">
-    <canvas class="hl" data-font="purl" data-text="See You There" data-pal="2" data-weight="3" data-cap=".085" data-param="12" aria-label="See You There"></canvas>
+    <canvas class="hl" data-font="purl" data-text="See You There" data-pal="0" data-fg="#efe7d6" data-weight="3" data-cap=".085" data-param="12" data-transparent="1" aria-label="See You There"></canvas>
     <div class="in tix">
       <article class="tk"><h3>Day Pass</h3><span class="amt">$12</span><p>One day of your choice, with a Classic hot cocoa.</p><button class="sbtn" type="button" data-t="Day Pass · $12">Choose</button></article>
       <article class="tk"><h3>Weekend</h3><span class="amt">$20</span><p>Both days, plus priority in the listening-room queue.</p><button class="sbtn" type="button" data-t="Weekend · $20">Choose</button></article>
@@ -1021,40 +1059,43 @@ function renderPicot(ctx,W,H,lay,o,seed){
 
 /* ---------- font definitions ---------- */
 const FONTS=[
- {id:'purl',no:'No. 1 · Knitting',name:'Purl',zh:'Knitted',render:renderPurl,seed:7,G:SETS.varsity,set:UPSET,wTrack:2.2,capScale:1,
+ {id:'purl',defaultPal:3,no:'No. 1 · Knitting',name:'Purl',zh:'Knitted',render:renderPurl,seed:7,G:SETS.varsity,set:UPSET,wTrack:2.2,capScale:1,
   desc:'Lettering knitted into a sweater. Every letter is worked stitch by stitch on the knitting grid, so the shapes come out square and chunky, the way a chart on graph paper turns into a jumper.',
   specs:[['Made of','Knit V stitches · two yarns · rib hem'],['Gauge',v=>`${v} rows per cap height`]],
   param:{label:'Gauge',min:8,max:18,step:1,value:12,fmt:v=>`${v} rows`},
   m:{l:.7,r:.7,t:.6,b:1,lh:1.6,track:3.2,space:4},
   surf:p=>p.bg,
-  pals:[{name:'Tomato / Oat',bg:'#e6dac7',fg:'#c9402a',gap:'#8f806b'},{name:'Pine / Ecru',bg:'#eee8da',fg:'#2e5c45',gap:'#9c9483'},{name:'Cream / Navy',bg:'#243250',fg:'#efe7d6',gap:'#0d1322'},{name:'Ecru / Black',bg:'#1c1c1e',fg:'#ece6d8',gap:'#050506'}],
+  pals:[{name:'On page',page:true,bg:'#ffffff',fg:'#c9402a',gap:'#d9d9d9',dark:{bg:'#0e0e0e',gap:'#000000'}},{name:'Tomato / Oat',bg:'#e6dac7',fg:'#c9402a',gap:'#8f806b'},{name:'Pine / Ecru',bg:'#eee8da',fg:'#2e5c45',gap:'#9c9483'},{name:'Cream / Navy',bg:'#243250',fg:'#efe7d6',gap:'#0d1322'},{name:'Ecru / Black',bg:'#1c1c1e',fg:'#ece6d8',gap:'#050506'}],
   chip:p=>[p.bg,p.fg]},
- {id:'ganache',no:'No. 2 · Piped chocolate',name:'Ganache',zh:'Piped',render:renderGanache,seed:21,G:SETS.piped,set:UPSET,wTrack:1.6,capScale:1,
+ {id:'ganache',defaultPal:4,no:'No. 2 · Piped chocolate',name:'Ganache',zh:'Piped',render:renderGanache,seed:21,G:SETS.piped,set:UPSET,wTrack:1.6,capScale:1,
   desc:'Writing with a piping bag on a plate. You stop and start again at every turn, so each letter is a few separate squeezes: a blob where the pressure starts, a thin tail where it lifts off, and a drip wherever the chocolate is too heavy to stay put.',
   specs:[['Made of','Separate piped strokes · drips'],['Nozzle','Ø 5 mm round'],['Drip',v=>`${Math.round(v*100)}%`]],
   param:{label:'Drip',min:0,max:1,step:.05,value:.6,fmt:v=>`${Math.round(v*100)}%`},
   m:{l:.6,r:.6,t:.55,b:1,lh:1.95,track:2.4,space:4},
   surf:p=>p.surface,
-  pals:[{name:'Dark / Porcelain',surface:'#f1eee9',deep:'#1f0f09',body:'#3a1d12',sheen:'#744332',glint:'#f6dfcf',shadow:'rgba(60,25,10,.38)'},
+  pals:[{name:'On page',page:true,surface:'#ffffff',deep:'#1f0f09',body:'#3a1d12',sheen:'#744332',glint:'#f6dfcf',shadow:'rgba(60,25,10,.3)',dark:{surface:'#0e0e0e',deep:'#bfa983',body:'#eee1c4',sheen:'#fff8ea',glint:'#ffffff',shadow:'rgba(0,0,0,.6)'}},
+        {name:'Dark / Porcelain',surface:'#f1eee9',deep:'#1f0f09',body:'#3a1d12',sheen:'#744332',glint:'#f6dfcf',shadow:'rgba(60,25,10,.38)'},
         {name:'Milk / Celadon',surface:'#d3dfe2',deep:'#40210f',body:'#6b3a20',sheen:'#a9693f',glint:'#fde9d6',shadow:'rgba(40,40,50,.34)'},
-        {name:'White / Cocoa',surface:'#4a2b20',deep:'#bfa983',body:'#eee1c4',sheen:'#fff8ea',glint:'#ffffff',shadow:'rgba(0,0,0,.5)'}],
+        {name:'White / Cocoa',surface:'#4a2b20',deep:'#bfa983',body:'#eee1c4',sheen:'#fff8ea',glint:'#ffffff',shadow:'rgba(0,0,0,.5)'},
+        {name:'Brown / Beige',surface:'#ebdfcb',deep:'#2c140a',body:'#5a2e18',sheen:'#93593a',glint:'#fbe6d2',shadow:'rgba(80,45,20,.35)'}],
   chip:p=>[p.surface,p.body]},
- {id:'tangle',no:'No. 3 · Earphone cable',name:'Tangle',zh:'Wired',render:renderTangle,seed:3,G:SETS.cursive,set:LOWSET,wTrack:.2,capScale:1.4,
+ {id:'tangle',defaultPal:1,no:'No. 3 · Earphone cable',name:'Tangle',zh:'Wired',render:renderTangle,seed:3,G:SETS.cursive,set:LOWSET,wTrack:.2,capScale:1.4,
   desc:'What a pair of wired earphones does in your pocket. A cable can\'t make a sharp corner, so it writes in one continuous, loopy line from the earbuds to the plug, tying a little loop wherever an i needs its dot.',
   specs:[['Made of','EarPods'],['Ends','Earbuds to 3.5 mm plug'],['Slack',v=>`${Math.round(v*100)}%`]],
   param:{label:'Slack',min:0,max:1,step:.05,value:.3,fmt:v=>`${Math.round(v*100)}%`},
   m:{l:.8,r:.5,t:.8,b:.95,lh:2,track:.9,space:3.8,lower:true},
   surf:p=>p.surface,
-  pals:[{name:'White earphones / Black',surface:'#131315',cable:'#f2f2f0',hi:'#ffffff',bud:'#f5f5f3',tip:'#c9cdd3',metal:'#d4d7dc'},
+  pals:[{name:'On page',page:true,surface:'#ffffff',cable:'#1c1c1e',hi:'#8a8a90',bud:'#232326',tip:'#3a3a3f',metal:'#c9cbcf',dark:{surface:'#0e0e0e',cable:'#f2f2f0',hi:'#ffffff',bud:'#f5f5f3',tip:'#c9cdd3',metal:'#d4d7dc'}},
+        {name:'White earphones / Black',surface:'#131315',cable:'#f2f2f0',hi:'#ffffff',bud:'#f5f5f3',tip:'#c9cdd3',metal:'#d4d7dc'},
         {name:'Black earphones / Grey',surface:'#e4e4e2',cable:'#1c1c1e',hi:'#8a8a90',bud:'#232326',tip:'#3a3a3f',metal:'#c9cbcf'}],
   chip:p=>[p.surface,p.cable]},
- {id:'picot',no:'No. 4 · Lace ribbon',name:'Picot',zh:'Laced',render:renderPicot,seed:11,G:SETS.didone,set:UPSET,wTrack:1.6,capScale:1.3,
+ {id:'picot',defaultPal:1,no:'No. 4 · Lace ribbon',name:'Picot',zh:'Laced',render:renderPicot,seed:11,G:SETS.didone,set:UPSET,wTrack:1.6,capScale:1.3,
   desc:'A lace ribbon pinned into letters. Where a stroke is thick, the ribbon opens into tulle, little flowers and eyelets; where it is thin, it narrows to a single thread edged with tiny picot loops.',
   specs:[['Made of','Tulle · scallops · picots · eyelets'],['Contrast',v=>`${(1/v).toFixed(1)} : 1`]],
   param:{label:'Contrast',min:.1,max:.45,step:.01,value:.16,fmt:v=>`${(1/v).toFixed(1)}:1`},
   m:{l:.75,r:.75,t:.6,b:.6,lh:1.72,track:2.8,space:4.4,xs:.78},
   surf:p=>p.surface,
-  pals:[{name:'White lace / Navy satin',surface:'#1b2649',lace:'#fbf8f1'},{name:'Black lace / Blush satin',surface:'#e8c9c2',lace:'#151313'}],
+  pals:[{name:'On page',page:true,surface:'#ffffff',lace:'#151313',dark:{surface:'#0e0e0e',lace:'#fbf8f1'}},{name:'White lace / Navy satin',surface:'#1b2649',lace:'#fbf8f1'},{name:'Black lace / Blush satin',surface:'#e8c9c2',lace:'#151313'}],
   chip:p=>[p.surface,p.lace]}
 ];
 /* ================= Kit: vector outlines ================= */
@@ -1199,8 +1240,9 @@ const CUSTOM={
  tangle:(fg,bg)=>({name:'Custom',surface:bg,cable:fg,hi:isDark(fg)?mixHex(fg,.45):'#ffffff',bud:fg,tip:mixHex(fg,isDark(fg)?.15:-.2),metal:'#d4d7dc'}),
  picot:(fg,bg)=>({name:'Custom',surface:bg,lace:fg})};
 FONTS.forEach(f=>{ f.custom=CUSTOM[f.id]; });
-const palOf=(f,s)=>s.pal<0?f.custom(s.fg,s.bg):f.pals[s.pal];
-const chipCols=(f,i)=>{ const [bg,fg]=f.chip(f.pals[i]); return {fg,bg}; };
+const themeDark=()=>true;
+const palOf=(f,s)=>{ if(s.pal<0) return f.custom(s.fg,s.bg); const p=f.pals[s.pal]; return p.page&&p.dark&&themeDark()?{...p,...p.dark}:p; };
+const chipCols=(f,i)=>{ const [bg,fg]=f.chip(palOf(f,{pal:i})); return {fg,bg}; };
 /* ================= shared: downloads + family zip ================= */
 let downloads=null;
 const dlReady=(async()=>{ try{ downloads=window.claude&&window.claude.use?await window.claude.use('downloads'):null; }catch(_){ downloads=null; } return downloads; })();
@@ -1239,7 +1281,7 @@ const SPEC=(()=>{
 const input=document.getElementById('sample'), hint=document.getElementById('hint'), host=document.getElementById('fonts');
 const HINT=hint.textContent;
 for(const f of FONTS){
-  f.state={pal:0,param:f.param.value,seed:f.seed,mode:'sample',weight:1,...chipCols(f,0)};
+  f.state={pal:f.defaultPal||0,param:f.param.value,seed:f.seed,mode:'sample',weight:1,...chipCols(f,f.defaultPal||0)};
   const el=document.createElement('article'); el.className='font'; el.id=f.id;
   el.innerHTML=`
   <div class="meta">
@@ -1249,7 +1291,7 @@ for(const f of FONTS){
     <dl class="spec">${f.specs.map(([k,v],i)=>`<div><dt>${k}</dt><dd data-i="${i}">${typeof v==='function'?v(f.param.value):v}</dd></div>`).join('')}</dl>
     <div class="ctrls">
       <div class="row"><span class="lbl">Weight</span><div class="seg wts" role="radiogroup" aria-label="${f.name} weight">${WEIGHTS.map(([n,nm],i)=>`<button type="button" role="radio" aria-checked="${i===1}" title="${nm} ${n}" data-i="${i}">${n}</button>`).join('')}</div><output class="wname">Regular</output></div>
-      <div class="row"><span class="lbl">Colorway</span><div class="chips" role="radiogroup" aria-label="${f.name} colorway">${f.pals.map((p,i)=>{const [a,b]=f.chip(p);return `<button type="button" class="chip" role="radio" aria-checked="${i===0}" aria-label="${p.name}" title="${p.name}" data-i="${i}" style="background:linear-gradient(135deg,${a} 50%,${b} 50%)"></button>`}).join('')}</div><span></span></div>
+      <div class="row"><span class="lbl">Colorway</span><div class="chips" role="radiogroup" aria-label="${f.name} colorway">${f.pals.map((p,i)=>{const [a,b]=f.chip(p);return `<button type="button" class="chip" role="radio" aria-checked="${i===(f.defaultPal||0)}" aria-label="${p.name}" title="${p.name}" data-i="${i}" style="background:linear-gradient(135deg,${a} 50%,${b} 50%)"></button>`}).join('')}</div><span></span></div>
       <div class="row"><span class="lbl">Custom</span><div class="cols"><label class="cin" for="${f.id}-fg"><input type="color" id="${f.id}-fg" value="${f.state.fg}">Letters</label><label class="cin" for="${f.id}-bg"><input type="color" id="${f.id}-bg" value="${f.state.bg}">Ground</label></div><span></span></div>
       <label class="row" for="${f.id}-param"><span class="lbl">${f.param.label}</span><input type="range" id="${f.id}-param" min="${f.param.min}" max="${f.param.max}" step="${f.param.step}" value="${f.param.value}"><output class="pv">${f.param.fmt(f.param.value)}</output></label>
       <div class="acts"><button type="button" class="btn ghost" id="${f.id}-reroll">Reroll</button><button type="button" class="btn" id="${f.id}-dl">Download family</button></div>
@@ -1294,7 +1336,7 @@ function draw(f){
   f.lastW=W;
   const st=f.state, pal=palOf(f,st), dpr=Math.min(2,window.devicePixelRatio||1);
   const txt=st.mode==='glyphs'?f.set:(input.value.trim()||'Soft Matter');
-  const opts=wm=>({pal,param:st.param,dpr,wm});
+  const opts=wm=>({pal,param:st.param,dpr,wm,transparent:!!pal.page});
   const ctx=f.canvas.getContext('2d');
   const setH=H=>{ f.canvas.width=Math.round(W*dpr); f.canvas.height=Math.round(H*dpr); f.canvas.style.height=H+'px'; ctx.setTransform(dpr,0,0,dpr,0,0); };
   f.canvas.setAttribute('aria-label',`${f.name} rendering: ${txt}`);
@@ -1336,7 +1378,7 @@ return {show(){ queue(); }};
 /* ================= Studio view ================= */
 const STUDIO=(()=>{
 const $=id=>document.getElementById(id);
-const ui={font:0,weight:1,pal:0,param:FONTS[0].param.value,bgOn:true,scale:2,...chipCols(FONTS[0],0)};
+const ui={font:0,weight:1,pal:FONTS[0].defaultPal||0,param:FONTS[0].param.value,bgOn:true,scale:2,...chipCols(FONTS[0],FONTS[0].defaultPal||0)};
 const cv=$('cv');
 function seg(el,items,cur,on){ el.innerHTML=items.map((t,i)=>`<button type="button" role="radio" aria-checked="${i===cur}" data-i="${i}">${t}</button>`).join('');
   el.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ el.querySelectorAll('button').forEach(c=>c.setAttribute('aria-checked',c===b)); on(+b.dataset.i); })); }
@@ -1354,7 +1396,7 @@ function fontControls(){
   const fam=`Soft Matter ${f.name}`, file=fam.replace(/ /g,'');
   $('css').textContent=WEIGHTS.map(([n,nm])=>`@font-face {\n  font-family: "${fam}";\n  src: url("fonts/${file}-${nm}.otf") format("opentype");\n  font-weight: ${n};\n  font-display: swap;\n}`).join('\n')+`\n\nh1 { font-family: "${fam}", serif; font-weight: 700; }`;
 }
-seg($('fontSeg'),FONTS.map(f=>f.name),0,i=>{ ui.font=i; ui.pal=0; Object.assign(ui,chipCols(FONTS[i],0)); ui.param=FONTS[i].param.value; fontControls(); render(); });
+seg($('fontSeg'),FONTS.map(f=>f.name),0,i=>{ ui.font=i; ui.pal=FONTS[i].defaultPal||0; Object.assign(ui,chipCols(FONTS[i],ui.pal)); ui.param=FONTS[i].param.value; fontControls(); render(); });
 seg($('wSeg'),WEIGHTS.map(w=>w[0]),1,i=>{ ui.weight=i; $('wname').textContent=WEIGHTS[i][1]; render(); });
 radio($('bgSeg'),v=>{ ui.bgOn=v==='1'; render(); });
 const onCol=()=>{ ui.pal=-1; ui.fg=$('cFg').value; ui.bg=$('cBg').value; $('palChips').querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-checked','false')); render(); };
@@ -1367,12 +1409,13 @@ function paint(canvas,W,dpr,text,extra={}){
   const lay=layoutText(text,(extra.cap||clamp(W*.112,40,128))*f.capScale,W,f.m,f.G,{wTrack:(wm-1)*f.wTrack});
   canvas.width=Math.round(W*dpr); canvas.height=Math.round(lay.H*dpr);
   const ctx=canvas.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,lay.H);
-  f.render(ctx,W,lay.H,lay,{pal:palOf(f,ui),param:ui.param,dpr,wm,transparent:!ui.bgOn||extra.transparent,bare:extra.bare},f.seed);
+  f.render(ctx,W,lay.H,lay,{pal:palOf(f,ui),param:ui.param,dpr,wm,transparent:!ui.bgOn||extra.transparent||!!palOf(f,ui).page,bare:extra.bare},f.seed);
   return lay;
 }
 const sampleText=()=>$('txt').value.trim()||'Soft Matter';
 function render(){
   const W=Math.floor(cv.parentElement.clientWidth); if(W<60) return;
+  cv.parentElement.classList.toggle('checker',!ui.bgOn);
   const lay=paint(cv,W,Math.min(2,window.devicePixelRatio||1),sampleText());
   cv.style.height=lay.H+'px';
   $('proofSize').textContent=`${F().name} ${WEIGHTS[ui.weight][1]} · ${palOf(F(),ui).name}${ui.bgOn?'':' · transparent'}`;
@@ -1426,7 +1469,8 @@ function draw(cv){
   const lay=layoutText(d.text,clamp(W*(+d.cap),40,150)*f.capScale,W,f.m,f.G,{wTrack:(wm-1)*f.wTrack});
   cv.width=Math.round(W*dpr); cv.height=Math.round(lay.H*dpr); cv.style.height=lay.H+'px';
   const ctx=cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
-  try{ f.render(ctx,W,lay.H,lay,{pal:f.pals[+d.pal],param:d.param!=null?+d.param:f.param.value,dpr,wm,transparent:d.transparent==='1'},f.seed); }catch(e){ console.error(e); }
+  const p0=f.pals[+d.pal];
+  try{ f.render(ctx,W,lay.H,lay,{pal:d.fg?f.custom(d.fg,'#131315'):(p0.dark?{...p0,...p0.dark}:p0),param:d.param!=null?+d.param:f.param.value,dpr,wm,transparent:d.transparent==='1'},f.seed); }catch(e){ console.error(e); }
 }
 function drawAll(){ let i=0; (function step(){ if(i<heads.length){ draw(heads[i++]); requestAnimationFrame(step); } })(); }
 let t=0; new ResizeObserver(()=>{ clearTimeout(t); t=setTimeout(drawAll,150); }).observe(document.getElementById('v-in-use'));
@@ -1448,6 +1492,9 @@ function show(v,scroll){
   requestAnimationFrame(()=>VIEWS[v].show());
 }
 addEventListener('hashchange',()=>show(location.hash.slice(1),true));
+const rerender=()=>{ SPEC.show(); STUDIO.show(); };
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',rerender);
+new MutationObserver(rerender).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 show(location.hash.slice(1),false);
 })();
 </script>
