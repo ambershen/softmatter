@@ -1,5 +1,5 @@
 # Renders the Laundromat's door swings, empty drums and pearl pile, registered to the room photo.
-# blender -b --python tools/laundromat.py -- <room.jpg> <outdir> <plates|doors|pearls> [machine]
+# blender -b --python tools/laundromat.py -- <room.jpg> <outdir> <plates|doors|pearls|wool> [machine]
 import bpy, bmesh, math, os, random, sys
 from mathutils import Vector
 
@@ -260,3 +260,32 @@ if MODE == 'pearls':     # replaces the drum contents in the photo with a render
     m = disc(H, W, cx, H - cy, 101, 5)[..., None]   # rows run bottom-up
     room[..., :3] = room[..., :3] * (1 - m) + b * m; room[..., 3] = 1
     save(np.clip(room, 0, 1), os.path.join(OUT, 'room.jpg'), 88)
+
+if MODE == 'wool':       # cut-outs of the wool drum's own contents, so they match the photo exactly
+    import numpy as np
+    room = pixels(ROOM)[::-1]; S = 2     # rows top-down, and doubled so the masks stay smooth
+    def crop(cx, cy, h, sy=1):
+        ys = np.linspace(cy - h * sy, cy + h * sy, 2 * h * S); xs = np.linspace(cx - h, cx + h, 2 * h * S)
+        y0, x0 = np.floor(ys).astype(int), np.floor(xs).astype(int); fy, fx = (ys - y0)[:, None, None], (xs - x0)[None, :, None]
+        a, b, c, d = room[y0][:, x0], room[y0][:, x0 + 1], room[y0 + 1][:, x0], room[y0 + 1][:, x0 + 1]
+        return a * (1 - fy) * (1 - fx) + b * (1 - fy) * fx + c * fy * (1 - fx) + d * fy * fx
+    def soft(v, lo, hi): t = np.clip((v - lo) / (hi - lo), 0, 1); return t * t * (3 - 2 * t)
+    def blur(m, n):
+        for _ in range(n):
+            for ax in (0, 1): m = (np.roll(m, 1, ax) + 2 * m + np.roll(m, -1, ax)) / 4
+        return m
+    def write(name, a, alpha):
+        a = a.copy(); a[..., 3] = alpha; save(np.ascontiguousarray(a[::-1]), os.path.join(OUT, name), 88)
+    def grid(h):
+        c = (np.arange(2 * h * S) + .5) / S - h; return np.meshgrid(c, c)
+    # the heap: everything lighter than the dark drum, below the glass reflections and inside the rim
+    h = 108; a = crop(719, 548, h); x, y = grid(h); lum = a[..., :3].max(2)
+    m = soft(blur(soft(lum, .38, .48), 18), .2, .45) * soft(y, -32, -24) * (1 - soft(np.hypot(x, y), 100, 104)) * soft(np.hypot(x + 108, y - 8), 16, 22)
+    write('wool-heap.webp', a, m)
+    # two balls, stretched to true circles and trimmed inside their edges, and irregular lumps of knit
+    for name, cx, cy, rx, ry in (('wool-ball-cream.webp', 686, 626, 35, 31), ('wool-ball-red.webp', 769, 621.7, 31.7, 31.7)):
+        h = 38; a = crop(cx, cy, h, ry / rx); x, y = grid(h); write(name, a, 1 - soft(np.hypot(x, y) / rx, .9, .95))
+    for name, cx, cy, rx, ry, ph in (('wool-knit-1.webp', 695, 567, 42, 25, 1.), ('wool-knit-2.webp', 748, 577, 36, 17, 3.)):
+        h = 50; a = crop(cx, cy, h); x, y = grid(h); q = np.arctan2(y, x)
+        edge = 1 + .13 * np.sin(q * 3 + ph) + .08 * np.sin(q * 5 + ph * 2) + .04 * np.sin(q * 11)
+        write(name, a, 1 - soft(np.hypot(x / rx, y / ry) / edge, .92, 1.))

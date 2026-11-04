@@ -345,7 +345,7 @@ output{ font-family:var(--mono); font-size:12px; text-align:right; white-space:n
 #v-laundromat .lw-m:nth-child(2n) .lw-glass{ animation-duration:8.2s; animation-delay:-2s }
 #v-laundromat .lw-m.spin .lw-glass{ animation:lwSpin 2.4s cubic-bezier(.5,0,.3,1) 1 }
 #v-laundromat .lw-m.still .lw-glass{ animation:none }
-#v-laundromat .lw-m.tumble .lw-in{ opacity:1; animation:lwDrum 2.4s cubic-bezier(.5,0,.3,1) 1; -webkit-mask-image:radial-gradient(closest-side,#000 73%,transparent 75%); mask-image:radial-gradient(closest-side,#000 73%,transparent 75%) }
+#v-laundromat .lw-m.tumble .lw-in{ opacity:1; animation:lwDrum 2.4s cubic-bezier(.5,0,.3,1) 1; -webkit-mask-image:radial-gradient(closest-side,#000 78%,transparent 80%); mask-image:radial-gradient(closest-side,#000 78%,transparent 80%) }
 #v-laundromat .lw-sheen{ position:absolute; border-radius:50%; pointer-events:none; z-index:3; opacity:0; transition:opacity .2s; background:radial-gradient(58% 42% at 36% 24%,rgba(255,238,222,.2),transparent 72%),radial-gradient(closest-side,transparent 76%,rgba(70,34,22,.42) 100%) }
 #v-laundromat .lw-sheen.on{ opacity:1 }
 #v-laundromat .lw-m.open .lw-glass{ animation-play-state:paused }
@@ -1926,7 +1926,7 @@ function laundry(){
   const RD=126, RG=100;
   // renders from tools/laundromat.py: one empty drum and one door-swing sheet per machine, cropped around the door
   const ASSET='assets/laundry/', FILES=['cocoa','wool','pearl','lace'], RP=134, CROP=[345,150,215,215], CELLS=20, COLS=5;
-  const HOLD={ganache:6400,purl:3600,nacre:5200,picot:5600}, SPIN=2400;
+  const HOLD={ganache:6400,purl:5200,nacre:5200,picot:5600}, SPIN=2400;
   const WORDS={ganache:['Cocoa','Sweet','Melt'],purl:['Knit','Cosy','Wool'],nacre:['Darling','Bonjour','Soft'],picot:['Lace','Bride','Oui']};
   const stage=sec.querySelector('.lw-stage'), input=sec.querySelector('.lw-word input'), out=sec.querySelector('.lw-out'), list=sec.querySelector('.lw-line ul');
   sec.querySelector('.lw-room').src=ROOM; sec.querySelector('.lw-bg').style.backgroundImage=`url(${ROOM})`;
@@ -1944,7 +1944,7 @@ function laundry(){
     const sheet=new Image(); sheet.src=`${ASSET}door-${FILES[i]}.webp`;
     w.append(inside,door,glass,swing,scr); stage.insertBefore(w,out);
     // pearls and chocolate obey gravity, so neither turns with the drum; the live layer sits behind the door and a pane of glass
-    let sheen=null; if(m.id==='nacre'||m.id==='ganache'){ w.classList.add('still'); swing.style.zIndex=3; stage.insertBefore(swing,out); sheen=document.createElement('div'); sheen.className='lw-sheen'; Object.assign(sheen.style,{left:pc(m.x-RG,IW),top:pc(m.y-RG,IH),width:pc(2*RG,IW),height:pc(2*RG,IH)}); stage.insertBefore(sheen,out); }
+    let sheen=null; if(m.id!=='picot'){ w.classList.add('still'); swing.style.zIndex=3; stage.insertBefore(swing,out); sheen=document.createElement('div'); sheen.className='lw-sheen'; Object.assign(sheen.style,{left:pc(m.x-RG,IW),top:pc(m.y-RG,IH),width:pc(2*RG,IW),height:pc(2*RG,IH)}); stage.insertBefore(sheen,out); }
     const hit=document.createElement('button'); hit.type='button'; hit.className='lw-hit';
     const col=i%2, row=i>>1; Object.assign(hit.style,{left:pc(192+col*352,IW),top:pc(row?830:330,IH),width:pc(350,IW),height:pc(460,IH)});
     hit.setAttribute('aria-label',`Wash with ${FT[m.id].name}: ${m.name.toLowerCase()}`); hit.addEventListener('click',()=>wash(i)); stage.insertBefore(hit,out);
@@ -2086,6 +2086,85 @@ function laundry(){
       liveRaf=T<SPIN/1000+11?requestAnimationFrame(frame):0;
     }
     liveRun={release(){ freed=T; c.sm.uniforms.uOpen.value=1; }};
+    els[i].w.classList.add('tumble','drain'); els[i].sheen.classList.add('on');
+    liveRaf=requestAnimationFrame(frame); return true;
+  }
+  // wool: cut-outs of the drum's own knit and yarn. The heap sways and stays; balls and knit tumble, and some drop out, the balls paying out strands; drawn in photo pixels
+  const PX_CLIP=`varying vec2 vPx; uniform vec3 uClip; uniform float uOpen;
+    float inside(){ float disc=1.-smoothstep(uClip.z-1.,uClip.z+1.,distance(vPx,uClip.xy)); return max(disc,uOpen*smoothstep(uClip.y+uClip.z*.7,uClip.y+uClip.z*.8,vPx.y)); }`;
+  const toClip=`vec2 q=vPx/vec2(${IW}.,${IH}.)*2.-1.; gl_Position=vec4(q.x,-q.y,0.,1.);`;
+  const ROPE_VS=`attribute float aC; attribute vec2 aN; varying vec2 vPx,vUv,vN; varying float vC; uniform vec2 uShift; void main(){ vPx=position.xy+uShift; vUv=uv; vC=aC; vN=aN; ${toClip} }`;
+  const ROPE_FS=`${PX_CLIP} varying vec2 vUv,vN; varying float vC; uniform vec3 uTint;
+    void main(){ float c=vC, k=.62+.38*sin(vUv.y*2.2+c*2.6); vec3 N=normalize(vec3(vN*c*.8,sqrt(max(.1,1.-c*c*.8)))), L=normalize(vec3(-.62,-.34,.71)); vec3 col=uTint*k*(.3+.95*clamp(dot(N,L),0.,1.)); gl_FragColor=vec4(col,1.);
+      #include <colorspace_fragment>
+      gl_FragColor.a=inside()*(1.-smoothstep(.82,1.,abs(c)));
+    }`;
+  const BALL_VS=`varying vec2 vPx,vQ; uniform vec3 uBall; void main(){ vQ=position.xy; vPx=uBall.xy+vQ*uBall.z; ${toClip} }`;
+  const BALL_FS=`${PX_CLIP} varying vec2 vQ; uniform sampler2D tB; uniform vec3 uTint; uniform float uRot, uShade;
+    void main(){ float cs=cos(uRot), sn=sin(uRot); vec4 t=texture2D(tB,.5+mat2(cs,sn,-sn,cs)*vQ*.5*vec2(1.,-1.)); float sh=mix(1.,mix(1.06,.74,smoothstep(-.5,.95,dot(vQ,vec2(.62,-.52)))),uShade); gl_FragColor=vec4(t.rgb*uTint*sh,t.a*inside()); }`;
+  const HEAP_VS=`varying vec2 vPx,vUv; uniform vec3 uHeap; uniform vec3 uMove; void main(){ vUv=uv; vec2 p=position.xy; p+=vec2(sin(p.y*5.+uMove.y*8.),cos(p.x*4.+uMove.y*7.))*.035*uMove.z; float c=cos(uMove.x), s=sin(uMove.x); p=mat2(c,s,-s,c)*p; vPx=uHeap.xy+p*vec2(1.,-1.)*uHeap.z; ${toClip} }`;
+  const HEAP_FS=`${PX_CLIP} varying vec2 vUv; uniform sampler2D tH; void main(){ vec4 t=texture2D(tH,vUv); gl_FragColor=vec4(t.rgb,t.a*inside()); }`;
+  const PAD_FS=`${PX_CLIP} varying vec2 vQ; void main(){ float d=1.-dot(vQ,vQ); gl_FragColor=vec4(.07,.03,.02,.55*max(d,0.)*max(d,0.)*inside()); }`;
+  const PAD_VS=`varying vec2 vPx,vQ; uniform vec4 uPad; void main(){ vQ=position.xy; vPx=uPad.xy+vQ*uPad.zw; ${toClip} }`;
+  let wool=null;
+  function ropeMesh(nodes,cross,uniforms,order){
+    const n=nodes*cross, g=new THREE.BufferGeometry(), idx=[]; for(let a=0;a<nodes-1;a++) for(let b=0;b<cross-1;b++){ const p=a*cross+b; idx.push(p,p+1,p+cross,p+1,p+cross+1,p+cross); }
+    g.setIndex(idx); g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(n*3),3)); g.setAttribute('uv',new THREE.BufferAttribute(new Float32Array(n*2),2)); g.setAttribute('aC',new THREE.BufferAttribute(new Float32Array(n),1)); g.setAttribute('aN',new THREE.BufferAttribute(new Float32Array(n*2),2));
+    const m=new THREE.Mesh(g,new THREE.ShaderMaterial({vertexShader:ROPE_VS,fragmentShader:ROPE_FS,uniforms,transparent:true,depthTest:false,depthWrite:false,side:THREE.DoubleSide,toneMapped:false})); m.frustumCulled=false; m.renderOrder=order; return m;
+  }
+  function setRope(mesh,px,py,count,cross,hw,vScale){ const g=mesh.geometry, P=g.attributes.position.array, U=g.attributes.uv.array, C=g.attributes.aC.array, Nn=g.attributes.aN.array; let s=0;
+    for(let a=0;a<count;a++){ const b=Math.min(count-1,a+1), c=Math.max(0,a-1); let tx=px[b]-px[c], ty=py[b]-py[c]; const l=Math.hypot(tx,ty)||1; tx/=l; ty/=l; if(a) s+=Math.hypot(px[a]-px[a-1],py[a]-py[a-1]);
+      for(let k=0;k<cross;k++){ const q=a*cross+k, cc=k/(cross-1)*2-1; P[q*3]=px[a]-ty*cc*hw; P[q*3+1]=py[a]+tx*cc*hw; C[q]=cc; U[q*2]=(cc*.5+.5)*.42; U[q*2+1]=s*vScale; Nn[q*2]=-ty; Nn[q*2+1]=tx; } }
+    for(const k of ['position','uv','aC','aN']) g.attributes[k].needsUpdate=true; }
+  function woolStage(){
+    if(wool) return wool;
+    const ld=new THREE.TextureLoader(), tex=n=>ld.load(ASSET+`wool-${n}.webp`), cream=tex('ball-cream'), red=tex('ball-red'), scene=new THREE.Scene(), clip={uClip:{value:new THREE.Vector3()},uOpen:{value:0}}, NS=30, flat={transparent:true,depthTest:false,depthWrite:false,side:THREE.DoubleSide,toneMapped:false};
+    const heap=new THREE.Mesh(new THREE.PlaneGeometry(2,2,20,20),new THREE.ShaderMaterial({vertexShader:HEAP_VS,fragmentShader:HEAP_FS,uniforms:{...clip,tH:{value:tex('heap')},uHeap:{value:new THREE.Vector3()},uMove:{value:new THREE.Vector3()}},...flat})); heap.frustumCulled=false; heap.renderOrder=1; scene.add(heap);
+    // only round yarn balls come out; the knit lumps and the last ball stay in the drum with the heap
+    const items=[[cream,31,1,1,1,[.75,.66,.52]],[red,28,1,1,1,[.45,.03,.03]],[cream,25,1,.66,1,[.68,.3,.3]],[red,23,1,1,1],[cream,24,1,1,1],[tex('knit-1'),46,0,0,0],[tex('knit-2'),40,0,0,0],[cream,22,1,.66,0]].map(([map,r,round,pink,out,strandTint],k)=>{ const tint=typeof pink==='number'&&pink<1?new THREE.Color(1,.6+pink*.02,.6):new THREE.Color(1,1,1);
+      const sprite=new THREE.Mesh(new THREE.PlaneGeometry(2,2),new THREE.ShaderMaterial({vertexShader:BALL_VS,fragmentShader:BALL_FS,uniforms:{...clip,tB:{value:map},uTint:{value:tint},uRot:{value:0},uShade:{value:round},uBall:{value:new THREE.Vector3()}},...flat}));
+      const pad=new THREE.Mesh(new THREE.PlaneGeometry(2,2),new THREE.ShaderMaterial({vertexShader:PAD_VS,fragmentShader:PAD_FS,uniforms:{...clip,uPad:{value:new THREE.Vector4()}},...flat}));
+      const strand=strandTint?ropeMesh(NS,3,{...clip,uTint:{value:new THREE.Color().setRGB(...strandTint)},uShift:{value:new THREE.Vector2()}},3):null;
+      sprite.frustumCulled=pad.frustumCulled=false; pad.renderOrder=0; sprite.renderOrder=4+k; scene.add(pad,sprite); if(strand) scene.add(strand); return {sprite,pad,strand,r,round:!!round,out:!!out}; });
+    return wool={scene,clip,heap,items,NS};
+  }
+  function tumbleWool(i){
+    const g=pearlStage(); if(!g) return false; const w=woolStage(), m=M[i], R=rng((Math.random()*1e9)|0), Rd=RG*.97, G=1500, NS=w.NS, lip=m.y+Rd*.9;
+    g.r.setPixelRatio(Math.min(2,devicePixelRatio||1)); g.r.setSize(stage.clientWidth,stage.clientHeight,false); w.clip.uClip.value.set(m.x,m.y,RG+3); w.clip.uOpen.value=0;
+    w.heap.material.uniforms.uHeap.value.set(m.x,m.y,108);
+    let spin=0, freed=0, T=0, lean=0, leanV=0;
+    const B=w.items.map((o,k)=>{ const a=Math.PI*(.15+.7*R()), d=(Rd-o.r)*(.4+.6*R()); return {o,x:m.x+Math.cos(a)*d,y:m.y+Math.sin(a)*d,vx:0,vy:0,r:o.r,r0:o.r*1.3,rot:o.round?R()*6:(R()-.5)*.8,w:0,t:k*.42+R()*.25,go:false,dir:(R()-.5)*2,yF:FLOOR_PX+16+R()*96,sx:new Float32Array(NS),sy:new Float32Array(NS),ox:new Float32Array(NS),oy:new Float32Array(NS),anchor:m.x+(R()-.5)*Rd*.7}; });
+    function step(dt){
+      for(const b of B){
+        if(freed&&!b.go&&b.o.out&&T-freed>=b.t){ b.go=true; b.vx=b.dir*(70+R()*120); b.vy=Math.min(b.vy,0)-40; for(let q=0;q<NS;q++){ b.sx[q]=b.ox[q]=b.anchor; b.sy[q]=b.oy[q]=lip; } }
+        b.vy+=G*dt; b.x+=b.vx*dt; b.y+=b.vy*dt;
+        if(!b.go){ const dx=b.x-m.x, dy=b.y-m.y, d=Math.hypot(dx,dy)||1, lim=Rd-b.r*(b.o.round?1:.7); if(d>lim){ const nx=dx/d, ny=dy/d, tx=-ny, ty=nx, vn=b.vx*nx+b.vy*ny; b.x=m.x+nx*lim; b.y=m.y+ny*lim; if(vn>0){ b.vx-=vn*nx*1.2; b.vy-=vn*ny*1.2; } const vt=b.vx*tx+b.vy*ty, dv=(spin*d-vt)*.14; b.vx+=tx*dv; b.vy+=ty*dv; b.w+=((b.vx*tx+b.vy*ty)/b.r*(b.o.round?1:.25)-b.w)*.3; } }
+        else{ if(b.r<b.r0) b.r+=dt*9; if(b.y+b.r*.82>b.yF){ b.y=b.yF-b.r*.82; b.vy=Math.abs(b.vy)>110?-b.vy*.44:0; b.vx*=.92; b.w=b.vx/b.r; } b.vx*=1-.7*dt; if(b.x<b.r||b.x>IW-b.r){ b.x=Math.min(IW-b.r,Math.max(b.r,b.x)); b.vx*=-.5; } }
+        b.rot+=b.w*dt;
+      }
+      for(let a=0;a<B.length;a++) for(let c=a+1;c<B.length;c++){ const p=B[a], o=B[c]; if(p.go!==o.go||(p.go&&Math.abs(p.yF-o.yF)>p.r+o.r)) continue; const dx=o.x-p.x, dy=o.y-p.y, d=Math.hypot(dx,dy)||1, D=(p.r+o.r)*.92; if(d>=D) continue; const nx=dx/d, ny=dy/d, e=(D-d)/2, vn=(o.vx-p.vx)*nx+(o.vy-p.vy)*ny; p.x-=nx*e; p.y-=ny*e; o.x+=nx*e; o.y+=ny*e; if(vn<0){ const j=-vn*.62; p.vx-=nx*j; p.vy-=ny*j; o.vx+=nx*j; o.vy+=ny*j; } }
+    }
+    // a strand pays out as its ball leaves: it hangs from the lip, sags, and lies down on the asphalt
+    function strand(b,dt){ const x=b.sx, y=b.sy, ox=b.ox, oy=b.oy, seg=(Math.hypot(b.x-b.anchor,b.y-lip)*1.3+40)/(NS-1), fy=FLOOR_PX+10+(b.yF-FLOOR_PX)*.6;
+      for(let q=1;q<NS-1;q++){ const vx=(x[q]-ox[q])*.97, vy=(y[q]-oy[q])*.97; ox[q]=x[q]; oy[q]=y[q]; x[q]+=vx; y[q]+=vy+G*.5*dt*dt; }
+      for(let it=0;it<10;it++){ x[0]=b.anchor; y[0]=lip; x[NS-1]=b.x; y[NS-1]=b.y;
+        for(let q=0;q<NS-1;q++){ const dx=x[q+1]-x[q], dy=y[q+1]-y[q], d=Math.hypot(dx,dy)||1; if(d<=seg) continue; const e=(d-seg)/d*.5; x[q]+=dx*e; y[q]+=dy*e; x[q+1]-=dx*e; y[q+1]-=dy*e; }
+        for(let q=1;q<NS-1;q++) if(y[q]>fy){ y[q]=fy; ox[q]=x[q]+(ox[q]-x[q])*.4; } } }
+    for(let q=0;q<240;q++) step(1/120);
+    B.forEach(b=>{ b.rot0=b.rot; }); const wx=new Float32Array(NS), wy=new Float32Array(NS), t0=performance.now(); let last=t0; const ease=t=>{ t=Math.min(1,Math.max(0,t)); return t*t*(3-2*t); };
+    function frame(now){
+      const dt=Math.min(.033,Math.max(.004,(now-last)/1000)); T=(now-t0)/1000; last=now;
+      spin=-5.2*ease(T/.5)*(1-ease((T-SPIN/1000+.55)/.5));
+      // the heap never turns over: the drum carries it up one side and it slumps back
+      const pull=-spin/5.2; leanV+=((.62*pull+.1*pull*Math.sin(T*7)-lean)*34-leanV*5.5)*dt; lean+=leanV*dt;
+      w.heap.material.uniforms.uMove.value.set(lean,T,Math.min(1,pull+Math.abs(leanV)*.6));
+      for(let q=0;q<2;q++) step(dt/2);
+      for(const b of B){ const o=b.o, u=o.sprite.material.uniforms; u.uBall.value.set(b.x,b.y,b.r); u.uRot.value=b.rot; const h=b.go?Math.max(0,1-(b.yF-b.r-b.y)/240):0;
+        o.pad.material.uniforms.uPad.value.set(b.go?b.x+b.r*.35:-999,b.yF-b.r*.14,b.r*1.5*h,b.r*.34*h);
+        if(o.strand){ o.strand.visible=b.go; if(b.go){ strand(b,dt); const fy=FLOOR_PX+9+(b.yF-FLOOR_PX)*.6; for(let q=0;q<NS;q++){ const on=b.sy[q]>=fy?1:0; wx[q]=b.sx[q]+on*Math.sin(q*1.3+b.rot0)*7; wy[q]=b.sy[q]+on*(Math.sin(q*.9+b.rot0*2)*9+5); } setRope(o.strand,wx,wy,NS,3,2.7,.12); } } }
+      g.r.render(w.scene,g.cam); liveRaf=T<SPIN/1000+11?requestAnimationFrame(frame):0;
+    }
+    liveRun={release(){ freed=T; w.clip.uOpen.value=1; }};
     els[i].w.classList.add('tumble','drain'); els[i].sheen.classList.add('on');
     liveRaf=requestAnimationFrame(frame); return true;
   }
@@ -2288,7 +2367,7 @@ function laundry(){
     e.w.classList.remove('spin','drain','tumble'); if(e.w.classList.contains('flat')) e.w.classList.remove('open'); else swingDoor(e,0,reduce?0:480,()=>e.w.classList.remove('open')); }
   function wash(i){
     if(busy>=0){ if(reveal) reveal(); return; } busy=i; const e=els[i], flat=!e.sheet.naturalWidth;
-    e.w.classList.toggle('flat',flat); if(!flat&&!reduce){ if(M[i].id==='nacre') tumblePearls(i); if(M[i].id==='ganache') tumbleCocoa(i); }
+    e.w.classList.toggle('flat',flat); if(!flat&&!reduce){ if(M[i].id==='nacre') tumblePearls(i); if(M[i].id==='ganache') tumbleCocoa(i); if(M[i].id==='purl') tumbleWool(i); }
     e.scr.textContent='WASHING'; e.w.classList.add('spin');
     const item=makeObject(i);
     setTimeout(()=>{ e.w.classList.remove('spin','tumble'); e.w.classList.add('open'); e.scr.textContent='DONE'; if(e.sheen) e.sheen.classList.remove('on'); if(!flat) swingDoor(e,1,reduce?0:900); bubbles(i);
