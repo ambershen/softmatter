@@ -15,7 +15,7 @@ The site has three views:
 - **Soft Matter (demo)**: a fictional winter market site set in the four faces.
 - **Laundromat**: pick one of four washing machines (cocoa, wool, pearl, lace); each wash turns out a one-off object lettered in that face, which you can hang on the line or download.
 
-The material renders are procedural (Canvas 2D, plus Three.js for the 3D pieces). The `.otf` files are monochrome outline versions generated from the same data with [opentype.js](https://github.com/opentypejs/opentype.js).
+The material renders are procedural (Canvas 2D, plus Three.js for the 3D pieces). The Laundromat's door swings, empty drums and pearl heap are Blender renders registered to the room photo; `tools/laundromat.py` regenerates them into `assets/laundry/` (usage is at the top of the script). The `.otf` files are monochrome outline versions generated from the same data with [opentype.js](https://github.com/opentypejs/opentype.js).
 
 ## Fonts
 
