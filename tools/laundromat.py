@@ -1,5 +1,5 @@
 # Renders the Laundromat's door swings, empty drums and pearl pile, registered to the room photo.
-# blender -b --python tools/laundromat.py -- <room.jpg> <outdir> <plates|doors|pearls|wool> [machine]
+# blender -b --python tools/laundromat.py -- <room.jpg> <outdir> <plates|doors|pearls|wool|lace> [machine]
 import bpy, bmesh, math, os, random, sys
 from mathutils import Vector
 
@@ -289,3 +289,15 @@ if MODE == 'wool':       # cut-outs of the wool drum's own contents, so they mat
         h = 50; a = crop(cx, cy, h); x, y = grid(h); q = np.arctan2(y, x)
         edge = 1 + .13 * np.sin(q * 3 + ph) + .08 * np.sin(q * 5 + ph * 2) + .04 * np.sin(q * 11)
         write(name, a, 1 - soft(np.hypot(x / rx, y / ry) / edge, .92, 1.))
+
+if MODE == 'lace':       # the lace drum's heap
+    import numpy as np
+    room = pixels(ROOM)[::-1]; S = 3
+    def sample(xs, ys):
+        x0, y0 = np.floor(xs).astype(int), np.floor(ys).astype(int); fx, fy = (xs - x0)[..., None], (ys - y0)[..., None]
+        return room[y0, x0] * (1 - fx) * (1 - fy) + room[y0, x0 + 1] * fx * (1 - fy) + room[y0 + 1, x0] * (1 - fx) * fy + room[y0 + 1, x0 + 1] * fx * fy
+    def soft(v, lo, hi): t = np.clip((v - lo) / (hi - lo), 0, 1); return t * t * (3 - 2 * t)
+    def write(name, a, alpha):
+        a = a.copy(); a[..., 3] = alpha; save(np.ascontiguousarray(a[::-1]), os.path.join(OUT, name), 88)
+    h = 108; c = (np.arange(2 * h * 2) + .5) / 2 - h; x, y = np.meshgrid(c, c); a = sample(719 + x, 1043 + y)
+    write('lace-heap.webp', a, soft(y, -74, -50) * (1 - soft(np.hypot(x, y), 99, 103)) * soft(np.hypot(x + 106, y - 20), 7, 13))

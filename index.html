@@ -1926,7 +1926,7 @@ function laundry(){
   const RD=126, RG=100;
   // renders from tools/laundromat.py: one empty drum and one door-swing sheet per machine, cropped around the door
   const ASSET='assets/laundry/', FILES=['cocoa','wool','pearl','lace'], RP=134, CROP=[345,150,215,215], CELLS=20, COLS=5;
-  const HOLD={ganache:6400,purl:5200,nacre:5200,picot:5600}, SPIN=2400;
+  const HOLD={ganache:6400,purl:5200,nacre:5200,picot:2400}, SPIN=2400;
   const WORDS={ganache:['Cocoa','Sweet','Melt'],purl:['Knit','Cosy','Wool'],nacre:['Darling','Bonjour','Soft'],picot:['Lace','Bride','Oui']};
   const stage=sec.querySelector('.lw-stage'), input=sec.querySelector('.lw-word input'), out=sec.querySelector('.lw-out'), list=sec.querySelector('.lw-line ul');
   sec.querySelector('.lw-room').src=ROOM; sec.querySelector('.lw-bg').style.backgroundImage=`url(${ROOM})`;
@@ -1943,8 +1943,8 @@ function laundry(){
     Object.assign(swing.style,{left:pc(m.x-CROP[0],IW),top:pc(m.y-CROP[2],IH),width:pc(swing.width,IW),height:pc(swing.height,IH)});
     const sheet=new Image(); sheet.src=`${ASSET}door-${FILES[i]}.webp`;
     w.append(inside,door,glass,swing,scr); stage.insertBefore(w,out);
-    // pearls and chocolate obey gravity, so neither turns with the drum; the live layer sits behind the door and a pane of glass
-    let sheen=null; if(m.id!=='picot'){ w.classList.add('still'); swing.style.zIndex=3; stage.insertBefore(swing,out); sheen=document.createElement('div'); sheen.className='lw-sheen'; Object.assign(sheen.style,{left:pc(m.x-RG,IW),top:pc(m.y-RG,IH),width:pc(2*RG,IW),height:pc(2*RG,IH)}); stage.insertBefore(sheen,out); }
+    // every load obeys gravity, so none turns with the drum; the live layer sits behind the door and a pane of glass
+    let sheen=null; { w.classList.add('still'); swing.style.zIndex=3; stage.insertBefore(swing,out); sheen=document.createElement('div'); sheen.className='lw-sheen'; Object.assign(sheen.style,{left:pc(m.x-RG,IW),top:pc(m.y-RG,IH),width:pc(2*RG,IW),height:pc(2*RG,IH)}); stage.insertBefore(sheen,out); }
     const hit=document.createElement('button'); hit.type='button'; hit.className='lw-hit';
     const col=i%2, row=i>>1; Object.assign(hit.style,{left:pc(192+col*352,IW),top:pc(row?830:330,IH),width:pc(350,IW),height:pc(460,IH)});
     hit.setAttribute('aria-label',`Wash with ${FT[m.id].name}: ${m.name.toLowerCase()}`); hit.addEventListener('click',()=>wash(i)); stage.insertBefore(hit,out);
@@ -2168,6 +2168,29 @@ function laundry(){
     els[i].w.classList.add('tumble','drain'); els[i].sheen.classList.add('on');
     liveRaf=requestAnimationFrame(frame); return true;
   }
+  // lace: nothing leaves the drum. The photo's own heap drifts with the turning drum and settles back
+  let lace=null;
+  function laceStage(){
+    if(lace) return lace;
+    const scene=new THREE.Scene(), clip={uClip:{value:new THREE.Vector3()},uOpen:{value:0}};
+    const heap=new THREE.Mesh(new THREE.PlaneGeometry(2,2,20,20),new THREE.ShaderMaterial({vertexShader:HEAP_VS,fragmentShader:HEAP_FS,uniforms:{...clip,tH:{value:new THREE.TextureLoader().load(ASSET+'lace-heap.webp')},uHeap:{value:new THREE.Vector3()},uMove:{value:new THREE.Vector3()}},transparent:true,depthTest:false,depthWrite:false,side:THREE.DoubleSide,toneMapped:false})); heap.frustumCulled=false; scene.add(heap);
+    return lace={scene,clip,heap};
+  }
+  function tumbleLace(i){
+    const g=pearlStage(); if(!g) return false; const w=laceStage(), m=M[i];
+    g.r.setPixelRatio(Math.min(2,devicePixelRatio||1)); g.r.setSize(stage.clientWidth,stage.clientHeight,false); w.clip.uClip.value.set(m.x,m.y,RG+3); w.heap.material.uniforms.uHeap.value.set(m.x,m.y,108);
+    let lean=0, leanV=0; const t0=performance.now(); let last=t0; const ease=t=>{ t=Math.min(1,Math.max(0,t)); return t*t*(3-2*t); };
+    function frame(now){
+      const dt=Math.min(.033,Math.max(.004,(now-last)/1000)), T=(now-t0)/1000; last=now;
+      const pull=ease(T/.5)*(1-ease((T-SPIN/1000+.55)/.5)); leanV+=((.3*pull+.09*pull*Math.sin(T*5)-lean)*18-leanV*3.2)*dt; lean+=leanV*dt;
+      w.heap.material.uniforms.uMove.value.set(lean,T*.7,Math.min(1,pull*.8+Math.abs(leanV)*.8));
+      g.r.render(w.scene,g.cam); liveRaf=T<SPIN/1000+4?requestAnimationFrame(frame):0;
+    }
+    // once the door has cleared, the heap sits above its shadow so the lace stays bright
+    els[i].swing.style.zIndex=3; liveRun={release(){ els[i].swing.style.zIndex=1; }};
+    els[i].w.classList.add('tumble','drain'); els[i].sheen.classList.add('on');
+    liveRaf=requestAnimationFrame(frame); return true;
+  }
   // the load tumbles in the turning drum for the wash, then the same pearls pour out when released
   function tumblePearls(i){
     const g=pearlStage(); if(!g) return false;
@@ -2367,7 +2390,7 @@ function laundry(){
     e.w.classList.remove('spin','drain','tumble'); if(e.w.classList.contains('flat')) e.w.classList.remove('open'); else swingDoor(e,0,reduce?0:480,()=>e.w.classList.remove('open')); }
   function wash(i){
     if(busy>=0){ if(reveal) reveal(); return; } busy=i; const e=els[i], flat=!e.sheet.naturalWidth;
-    e.w.classList.toggle('flat',flat); if(!flat&&!reduce){ if(M[i].id==='nacre') tumblePearls(i); if(M[i].id==='ganache') tumbleCocoa(i); if(M[i].id==='purl') tumbleWool(i); }
+    e.w.classList.toggle('flat',flat); if(!flat&&!reduce){ if(M[i].id==='nacre') tumblePearls(i); if(M[i].id==='ganache') tumbleCocoa(i); if(M[i].id==='purl') tumbleWool(i); if(M[i].id==='picot') tumbleLace(i); }
     e.scr.textContent='WASHING'; e.w.classList.add('spin');
     const item=makeObject(i);
     setTimeout(()=>{ e.w.classList.remove('spin','tumble'); e.w.classList.add('open'); e.scr.textContent='DONE'; if(e.sheen) e.sheen.classList.remove('on'); if(!flat) swingDoor(e,1,reduce?0:900); bubbles(i);
