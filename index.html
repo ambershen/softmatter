@@ -322,16 +322,20 @@ output{ font-family:var(--mono); font-size:12px; text-align:right; white-space:n
 #v-laundromat{ background:#120f12; min-height:100vh }
 #v-laundromat .lw{ min-height:calc(100vh - 60px) }
 #v-laundromat .lw{ position:relative; overflow:hidden; background:#120f12; color:#f3ece6; padding:28px 0 40px }
-#v-laundromat .lw-bg{ position:absolute; inset:-40px; background-size:cover; background-position:center; filter:blur(38px) brightness(.42) saturate(1.1); transform:scale(1.1) }
+#v-laundromat .lw-bg{ position:absolute; inset:0; background:radial-gradient(70% 62% at 50% 56%,#4a2c2b 0%,#2a1a1e 52%,#160f13 100%); }
 #v-laundromat .lw .in{ position:relative }
 #v-laundromat .lw-top{ display:flex; flex-wrap:wrap; align-items:end; justify-content:space-between; gap:14px 24px; margin-bottom:18px }
 #v-laundromat .lw-top .lbl{ color:#e9b9c6; margin:0 }
 #v-laundromat .lw-top h2{ margin:4px 0 0; font:600 clamp(26px,3.4vw,38px)/1.1 "Bricolage Grotesque",sans-serif; letter-spacing:-.01em }
-#v-laundromat .lw-word{ display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); border-radius:999px; padding:6px 8px 6px 16px }
-#v-laundromat .lw-word label{ font:500 12px "JetBrains Mono",monospace; letter-spacing:.08em; text-transform:uppercase; color:#e9b9c6 }
-#v-laundromat .lw-word input{ width:min(46vw,200px); background:transparent; border:0; color:#fff; font:500 16px "Hanken Grotesk",sans-serif; outline:none; padding:6px 4px }
-#v-laundromat .lw-word input::placeholder{ color:rgba(255,255,255,.45) }
-#v-laundromat .lw-stage{ position:relative; width:min(100%,560px); margin:0 auto; aspect-ratio:1089/1445; border-radius:18px; overflow:hidden; box-shadow:0 30px 80px rgba(0,0,0,.55); user-select:none; -webkit-user-select:none }
+#v-laundromat .lw-load{ position:absolute; z-index:3; display:flex; gap:6px; width:min(270px,60%); transform:translate(-50%,-50%); padding:6px; border-radius:999px; background:rgba(38,25,20,.94); box-shadow:0 10px 30px rgba(20,10,6,.55),0 0 0 1px rgba(240,222,198,.32) }
+#v-laundromat .lw-load[hidden]{ display:none }
+#v-laundromat .lw-load input{ flex:1; min-width:0; background:transparent; border:0; outline:none; color:#f6e8d4; font:400 20px "VT323",ui-monospace,monospace; letter-spacing:.05em; padding:6px 6px 6px 14px }
+#v-laundromat .lw-load input::placeholder{ color:rgba(246,232,212,.55) }
+#v-laundromat .lw-load button{ flex:none; border:0; border-radius:999px; background:#efdfc8; color:#33221a; font:400 20px "VT323",ui-monospace,monospace; letter-spacing:.08em; text-transform:uppercase; padding:6px 16px; cursor:pointer }
+#v-laundromat .lw-load button:hover{ background:#fff1de }
+#v-laundromat .lw-sound{ background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); border-radius:999px; color:#f3ece6; font:500 12px "JetBrains Mono",monospace; letter-spacing:.08em; text-transform:uppercase; padding:10px 14px; cursor:pointer }
+#v-laundromat .lw-sound:hover{ background:rgba(255,255,255,.14) }
+#v-laundromat .lw-stage{ position:relative; width:min(100%,560px,max(320px,calc((100vh - 205px)*1089/1445))); margin:0 auto; aspect-ratio:1089/1445; border-radius:18px; overflow:hidden; box-shadow:0 30px 80px rgba(0,0,0,.55); user-select:none; -webkit-user-select:none }
 #v-laundromat .lw-room{ position:absolute; inset:0; width:100%; height:100%; display:block }
 #v-laundromat .lw-tone{ position:absolute; inset:0; pointer-events:none; background:linear-gradient(180deg,rgba(214,150,190,.16),rgba(255,180,200,.06)); mix-blend-mode:soft-light }
 #v-laundromat .lw-m{ position:absolute; perspective:900px; pointer-events:none }
@@ -357,6 +361,8 @@ output{ font-family:var(--mono); font-size:12px; text-align:right; white-space:n
 @keyframes lwSpin{ 0%{ transform:rotate(-6deg); filter:blur(0) } 45%{ filter:blur(2.5px) } 100%{ transform:rotate(1074deg); filter:blur(0) } }
 @keyframes lwDrum{ 0%{ transform:rotate(0); filter:blur(0) } 45%{ filter:blur(1.5px) } 100%{ transform:rotate(-1080deg); filter:blur(0) } }
 #v-laundromat .lw-scr{ position:absolute; display:flex; align-items:center; justify-content:center; overflow:hidden; font-family:"VT323",ui-monospace,monospace; color:#ff8fb6; text-shadow:0 0 6px rgba(255,120,170,.85),0 0 1px #fff; letter-spacing:.06em; white-space:nowrap; pointer-events:none; background:rgba(40,8,24,.62); border-radius:3px; box-shadow:inset 0 0 6px rgba(0,0,0,.6) }
+#v-laundromat .lw-stage:not(.busy) .lw-scr{ animation:lwCue 3.2s ease-in-out infinite }
+@keyframes lwCue{ 0%,24%,100%{ filter:none; box-shadow:none } 5%,15%{ filter:brightness(1.6) saturate(1.2); box-shadow:0 0 14px 3px rgba(255,120,180,.75) } 10%{ filter:brightness(1.15); box-shadow:0 0 6px 1px rgba(255,120,180,.4) } }
 #v-laundromat .lw-hit{ position:absolute; background:transparent; border:0; border-radius:14px; cursor:pointer; padding:0 }
 #v-laundromat .lw-hit:hover{ background:rgba(255,190,215,.07) }
 #v-laundromat .lw-hit:focus-visible{ outline:2px solid #ff9fc0; outline-offset:-4px }
@@ -364,26 +370,22 @@ output{ font-family:var(--mono); font-size:12px; text-align:right; white-space:n
 #v-laundromat .lw-gl{ position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:2; filter:blur(.25px) sepia(.14) }
 #v-laundromat .lw-bub{ position:absolute; width:14px; height:14px; margin:-7px; border-radius:50%; pointer-events:none;
   background:radial-gradient(circle at 32% 30%,rgba(255,255,255,.95) 0 8%,rgba(255,255,255,.12) 22%,rgba(255,200,230,.08) 60%,rgba(190,220,255,.35) 86%,rgba(255,255,255,.55) 100%) }
-#v-laundromat .lw-hint{ text-align:center; color:rgba(243,236,230,.7); font:400 13px "Hanken Grotesk",sans-serif; margin:14px 0 0 }
+#v-laundromat .lw-pano{ display:none; position:absolute; border-radius:18px; background:#58442f no-repeat top/100% auto; box-shadow:0 30px 80px rgba(0,0,0,.5); -webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent); mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent) }
+@media (min-width:1100px){ #v-laundromat .lw-pano{ display:block } #v-laundromat .lw-stage{ box-shadow:none; border-radius:0; -webkit-mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent); mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent) } }
 #v-laundromat .lw-out{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(26,14,20,.38); backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px); z-index:3 }
 #v-laundromat .lw-out[hidden]{ display:none }
 #v-laundromat .lw-card{ width:84%; background:#f8f1ec; color:#2a1d22; border-radius:16px; padding:14px 14px 16px; box-shadow:0 24px 60px rgba(0,0,0,.5) }
 #v-laundromat .lw-card canvas{ display:block; width:100%; height:auto; border-radius:10px; background:#efe5df }
+#v-laundromat .lw-card{ position:relative }
+#v-laundromat .lw-card .x{ position:absolute; top:20px; right:20px; z-index:1; width:38px; height:38px; padding:0; border-radius:50%; border:0; background:rgba(30,18,22,.72); color:#fff; font:400 24px/38px "Hanken Grotesk",sans-serif; text-align:center; cursor:pointer; backdrop-filter:blur(4px) }
+#v-laundromat .lw-card .x:hover{ background:rgba(30,18,22,.92) }
 #v-laundromat .lw-card .t{ font:600 17px "Bricolage Grotesque",sans-serif; margin:12px 2px 2px }
 #v-laundromat .lw-card .s{ font:400 12px "JetBrains Mono",monospace; color:#8d6f78; margin:0 2px 12px; letter-spacing:.02em }
 #v-laundromat .lw-card .b{ display:flex; flex-wrap:wrap; gap:8px }
 #v-laundromat .lw-card button{ font:500 14px "Hanken Grotesk",sans-serif; border-radius:999px; padding:9px 15px; cursor:pointer; border:1px solid #2a1d22; background:transparent; color:#2a1d22 }
 #v-laundromat .lw-card button.fill{ background:#2a1d22; color:#f8f1ec }
 #v-laundromat .lw-card .status{ font:400 12px "Hanken Grotesk",sans-serif; margin:8px 2px 0; min-height:1em; color:#8d6f78 }
-#v-laundromat .lw-line{ position:relative; width:min(100%,960px); margin:30px auto 0; padding-top:18px }
-#v-laundromat .lw-line::before{ content:""; position:absolute; left:0; right:0; top:10px; height:22px; border-top:1.5px solid rgba(243,236,230,.55); border-radius:50% 50% 0 0/22px 22px 0 0; transform:scaleY(-1); transform-origin:top }
-#v-laundromat .lw-line ul{ list-style:none; margin:0; padding:0 8px; display:flex; gap:14px; overflow-x:auto; min-height:40px; scrollbar-width:thin }
-#v-laundromat .lw-line li{ flex:none; position:relative; padding-top:10px; transform-origin:50% 0 }
-#v-laundromat .lw-line li button{ border:0; padding:0; background:none; cursor:pointer; display:block }
-#v-laundromat .lw-line li canvas{ display:block; width:108px; height:108px; border-radius:6px; box-shadow:0 10px 22px rgba(0,0,0,.45) }
-#v-laundromat .lw-line li:not(.empty)::before{ content:""; position:absolute; top:2px; left:50%; width:8px; height:18px; margin-left:-4px; border-radius:2px; background:linear-gradient(90deg,#e9c9a6,#c49a73); box-shadow:0 1px 2px rgba(0,0,0,.4); z-index:1 }
-#v-laundromat .lw-line .empty{ color:rgba(243,236,230,.55); font:400 13px "Hanken Grotesk",sans-serif; padding:14px 8px }
-@media (prefers-reduced-motion: reduce){ #v-laundromat .lw-glass{ animation:none } #v-laundromat .lw-door{ transition:none } }
+@media (prefers-reduced-motion: reduce){ #v-laundromat .lw-stage .lw-scr{ animation:none !important } #v-laundromat .lw-glass{ animation:none } #v-laundromat .lw-door{ transition:none } }
 </style>
 
 <div class="mast">
@@ -419,17 +421,16 @@ output{ font-family:var(--mono); font-size:12px; text-align:right; white-space:n
     <div class="lw-bg" aria-hidden="true"></div>
     <div class="in">
       <div class="lw-top">
-        <div><p class="lbl">Soft Matter Laundromat · open late</p><h2>Pick a machine. Every wash comes out different.</h2></div>
-        <div class="lw-word"><label for="lw-word">Your word</label><input id="lw-word" maxlength="14" placeholder="Darling" autocomplete="off" spellcheck="false"></div>
+        <p class="lbl">Soft Matter Laundromat · open late</p>
+        <button class="lw-sound" type="button" aria-pressed="true">Sound on</button>
       </div>
       <div class="lw-stage">
         <img class="lw-room" alt="Four stacked washing machines at sunset, filled with chocolate, yarn, pearls and lace">
         <div class="lw-tone"></div>
-        <div class="lw-out" hidden><div class="lw-card" role="dialog" aria-label="Fresh out of the wash"><canvas></canvas><p class="t"></p><p class="s"></p>
-          <div class="b"><button class="fill" data-a="hang" type="button">Hang it up</button><button data-a="save" type="button">Download PNG</button><button data-a="again" type="button">Wash again</button></div><p class="status" aria-live="polite"></p></div></div>
+        <form class="lw-load" hidden><input aria-label="Your word" maxlength="14" placeholder="Your word" autocomplete="off" spellcheck="false"><button type="submit">Start</button></form>
+        <div class="lw-out" hidden><div class="lw-card" role="dialog" aria-label="Fresh out of the wash"><button class="x" data-a="close" type="button" aria-label="Back to the machines">×</button><canvas></canvas><p class="t"></p><p class="s"></p>
+          <div class="b"><button class="fill" data-a="save" type="button">Save image</button><button data-a="ink" type="button">Transparent</button><button data-a="again" type="button">Wash again</button></div><p class="status" aria-live="polite"></p></div></div>
       </div>
-      <p class="lw-hint">Tap a machine. Type a word first to have it written in.</p>
-      <div class="lw-line"><ul><li class="empty">Nothing on the line yet.</li></ul></div>
     </div>
   </section>
 
@@ -1926,10 +1927,10 @@ function laundry(){
   const RD=126, RG=100;
   // renders from tools/laundromat.py: one empty drum and one door-swing sheet per machine, cropped around the door
   const ASSET='assets/laundry/', FILES=['cocoa','wool','pearl','lace'], RP=134, CROP=[345,150,215,215], CELLS=20, COLS=5;
-  const HOLD={ganache:6400,purl:5200,nacre:5200,picot:2400}, SPIN=2400;
+  const HOLD={ganache:8000,purl:5200,nacre:5200,picot:2400}, SPIN=2400;
   const WORDS={ganache:['Cocoa','Sweet','Melt'],purl:['Knit','Cosy','Wool'],nacre:['Darling','Bonjour','Soft'],picot:['Lace','Bride','Oui']};
-  const stage=sec.querySelector('.lw-stage'), input=sec.querySelector('.lw-word input'), out=sec.querySelector('.lw-out'), list=sec.querySelector('.lw-line ul');
-  sec.querySelector('.lw-room').src=ROOM; sec.querySelector('.lw-bg').style.backgroundImage=`url(${ROOM})`;
+  const stage=sec.querySelector('.lw-stage'), form=sec.querySelector('.lw-load'), input=form.querySelector('input'), out=sec.querySelector('.lw-out');
+  sec.querySelector('.lw-room').src=ROOM; 
   const pc=(v,t)=>`${v/t*100}%`;
   const crop=(el,cx,cy,r)=>{ Object.assign(el.style,{left:pc(cx-r,IW),top:pc(cy-r,IH),width:pc(2*r,IW),height:pc(2*r,IH),
     backgroundImage:`url(${ROOM})`,backgroundSize:`${IW/(2*r)*100}% ${IH/(2*r)*100}%`,backgroundPosition:`${(cx-r)/(IW-2*r)*100}% ${(cy-r)/(IH-2*r)*100}%`}); };
@@ -1938,7 +1939,7 @@ function laundry(){
     const inside=document.createElement('div'); inside.className='lw-in'; crop(inside,m.x,m.y,RP); Object.assign(inside.style,{backgroundImage:`url(${ASSET}drum-${FILES[i]}.webp)`,backgroundSize:'100% 100%',backgroundPosition:'0 0'});
     const door=document.createElement('div'); door.className='lw-door'; crop(door,m.x,m.y,RD);
     const glass=document.createElement('div'); glass.className='lw-glass'; crop(glass,m.x,m.y,RG);
-    const scr=document.createElement('div'); scr.className='lw-scr'; Object.assign(scr.style,{left:pc(m.sx,IW),top:pc(m.sy,IH),width:pc(104,IW),height:pc(50,IH)});
+    const scr=document.createElement('div'); scr.className='lw-scr'; Object.assign(scr.style,{left:pc(m.sx,IW),top:pc(m.sy,IH),width:pc(104,IW),height:pc(50,IH),animationDelay:`${i*.8}s`});
     const swing=document.createElement('canvas'); swing.className='lw-swing'; swing.width=CROP[0]+CROP[1]; swing.height=CROP[2]+CROP[3];
     Object.assign(swing.style,{left:pc(m.x-CROP[0],IW),top:pc(m.y-CROP[2],IH),width:pc(swing.width,IW),height:pc(swing.height,IH)});
     const sheet=new Image(); sheet.src=`${ASSET}door-${FILES[i]}.webp`;
@@ -1947,7 +1948,7 @@ function laundry(){
     let sheen=null; { w.classList.add('still'); swing.style.zIndex=3; stage.insertBefore(swing,out); sheen=document.createElement('div'); sheen.className='lw-sheen'; Object.assign(sheen.style,{left:pc(m.x-RG,IW),top:pc(m.y-RG,IH),width:pc(2*RG,IW),height:pc(2*RG,IH)}); stage.insertBefore(sheen,out); }
     const hit=document.createElement('button'); hit.type='button'; hit.className='lw-hit';
     const col=i%2, row=i>>1; Object.assign(hit.style,{left:pc(192+col*352,IW),top:pc(row?830:330,IH),width:pc(350,IW),height:pc(460,IH)});
-    hit.setAttribute('aria-label',`Wash with ${FT[m.id].name}: ${m.name.toLowerCase()}`); hit.addEventListener('click',()=>wash(i)); stage.insertBefore(hit,out);
+    hit.setAttribute('aria-label',`Wash with ${FT[m.id].name}: ${m.name.toLowerCase()}`); hit.addEventListener('click',()=>load(i)); stage.insertBefore(hit,out);
     return {w,inside,door,glass,scr,swing,sheet,sheen,p:0,raf:0};
   });
   // plays the door's sprite sheet towards to (0 shut, 1 open); shut leaves the photo's own door showing
@@ -2047,7 +2048,7 @@ function laundry(){
     const x=new Float32Array(N), y=new Float32Array(N), vx=new Float32Array(N), vy=new Float32Array(N), px=new Float32Array(N), py=new Float32Array(N), rho=new Float32Array(N), rhn=new Float32Array(N);
     const mode=new Uint8Array(N), del=new Float32Array(N), lipY=px=>m.y+Math.sqrt(Math.max(0,Rd*Rd-(px-m.x)*(px-m.x)));
     // each rivulet is a rope with a tracked head: thick at the lip, necked, a heavy bead at the tip; some give out on the way down, the rest pool on the floor
-    const lanes=[...Array(7)].map((_,k)=>{ const lx=m.x-RG*.68+(k+.1+R()*.8)*RG*.195, short=R()<.3, fat=R(); return {x:lx,lip:lipY(lx)-6,head:lipY(lx)-6,v:165+R()*150+fat*40,r:3.5+fat*fat*12,ph:R()*6,t:R()*1.3,end:short?lipY(lx)+90+R()*340:FLOOR,pool:0,poolMax:70+fat*80+R()*30,pz:6+R()*34}; });
+    const lanes=[...Array(7)].map((_,k)=>{ const lx=m.x-RG*.68+(k+.1+R()*.8)*RG*.195, short=R()<.3, fat=R(); return {x:lx,lip:lipY(lx)-6,head:lipY(lx)-6,v:(165+R()*150+fat*40)*.72,r:3.5+fat*fat*12,ph:R()*6,t:R()*1.3,end:short?lipY(lx)+90+R()*340:FLOOR,pool:0,poolMax:70+fat*80+R()*30,pz:6+R()*34}; });
     const pathX=(l,py)=>l.x+Math.sin(py*.009+l.ph)*Math.min(6,(py-l.lip)*.03)+Math.sin(py*.03+l.ph*2)*1.8;
     for(let k=0;k<N;k++){ let a,b; do{ a=(R()*2-1)*Rd; b=R()*Rd; }while(a*a+b*b>(Rd-6)*(Rd-6)||b<Rd*-.05); x[k]=m.x+a; y[k]=m.y+b; c.rad[k]=11+R()*3.5; c.wgt[k]=.6+R()*R()*1.3; del[k]=R()<.82?Math.pow(R(),1.1)*3.6:1e9; }
     const CW=Math.ceil(IW/HH), CH=Math.ceil(IH/HH)+2, head=new Int32Array(CW*CH), next=new Int32Array(N), pa=new Int32Array(60000), pb=new Int32Array(60000); let spin=0, freed=0, T=0;
@@ -2314,60 +2315,75 @@ function laundry(){
     fxRun=st; fxRaf=requestAnimationFrame(frame);
   }
   // screens: material name, then the word you typed
-  let tick=0; const word=()=>input.value.trim().slice(0,14);
-  function screens(){ const fs=stage.clientWidth*.034; els.forEach((e,i)=>{ if(busy===i) return; const w=word(); e.scr.style.fontSize=fs+'px'; e.scr.textContent=w&&tick%2?w.toUpperCase():M[i].name; }); }
-  setInterval(()=>{ tick++; screens(); },1600); input.addEventListener('input',()=>{ tick=1; screens(); }); new ResizeObserver(screens).observe(stage);
-  // objects
-  const pick=(R,a)=>a[Math.floor(R()*a.length)];
+  const pano=document.createElement('div'); pano.className='lw-pano'; pano.style.backgroundImage=`url(${ASSET}obj-panorama.webp)`; sec.querySelector('.in').insertBefore(pano,stage);
+  // ChatGPT's panorama redrew the washers a little taller, so it is scaled per axis to land on ours
+  function fitPano(){ const k=stage.clientWidth/IW, inn=sec.querySelector('.in').getBoundingClientRect(), r=stage.getBoundingClientRect(); Object.assign(pano.style,{left:r.left-inn.left-430.2/.7142*k+'px',top:r.top-inn.top-13.7/.6676*k+'px',width:1672/.7142*k+'px',height:Math.max(941/.6676*k,r.bottom-r.top+13.7/.6676*k)+'px',backgroundSize:`100% ${941/.6676*k}px`}); }
+  new ResizeObserver(fitPano).observe(stage); addEventListener('resize',fitPano);
+  // sound is synthesised on the fly: no audio files, and nothing plays until someone has clicked a machine
+  const snd=(()=>{ let ac=null, bus=null, noise=null, on=true, spinStop=null, timers=[];
+    try{ on=localStorage.getItem('sm-sound')!=='off'; }catch(e){}
+    const ready=()=>{ if(!on) return false; if(!ac){ const A=window.AudioContext||window.webkitAudioContext; if(!A) return false; ac=new A(); bus=ac.createGain(); bus.gain.value=.5; bus.connect(ac.destination); noise=ac.createBuffer(1,ac.sampleRate*2,ac.sampleRate); const d=noise.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1; } if(ac.state==='suspended') ac.resume(); return true; };
+    const env=(t,a,peak,hold,rel)=>{ const g=ac.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(peak,t+a); g.gain.setValueAtTime(peak,t+a+hold); g.gain.exponentialRampToValueAtTime(.0001,t+a+hold+rel); g.connect(bus); return g; };
+    const tone=(t,type,f0,f1,dur,peak)=>{ const o=ac.createOscillator(); o.type=type; o.frequency.setValueAtTime(f0,t); o.frequency.exponentialRampToValueAtTime(f1,t+dur); o.connect(env(t,.004,peak,0,dur)); o.start(t); o.stop(t+dur+.05); };
+    const hiss=(t,fq,q,dur,peak,kind='bandpass')=>{ const n=ac.createBufferSource(); n.buffer=noise; n.loop=true; const b=ac.createBiquadFilter(); b.type=kind; b.frequency.value=fq; b.Q.value=q; n.connect(b); b.connect(env(t,dur*.25,peak,0,dur*.75)); n.start(t,Math.random()); n.stop(t+dur+.05); return b; };
+    const later=(ms,fn)=>timers.push(setTimeout(()=>{ if(on&&ac) fn(ac.currentTime); },ms));
+    const SPILL={
+      nacre(){ for(let k=0;k<70;k++){ const ms=350+Math.pow(Math.random(),1.6)*4200; later(ms,t=>tone(t,'sine',2600+Math.random()*2600,1900+Math.random()*900,.035,.05+Math.random()*.06)); } },
+      ganache(){ for(let k=0;k<12;k++) later(k*680+Math.random()*420,t=>{ const f=420+Math.random()*260; tone(t,'sine',f,f*1.5,.07,.06); }); },
+      purl(){ [500,830,1020,1500,1800,2300,2600].forEach((ms,k)=>later(ms+Math.random()*90,t=>{ tone(t,'sine',120-k*5,62,.13,.3-k*.025); hiss(t,500,.7,.07,.03,'lowpass'); })); },
+      picot(){ later(0,t=>{ hiss(t,5200,.8,1.8,.022); [1568,2093,2637].forEach((f,k)=>tone(t+k*.17,'sine',f,f,.8,.018)); }); }
+    };
+    return {
+      get on(){ return on; },
+      set(v){ on=v; try{ localStorage.setItem('sm-sound',v?'on':'off'); }catch(e){} if(!v) this.stop(); },
+      spin(sec){ if(!ready()) return; const t=ac.currentTime, m=ac.createGain(), n=ac.createBufferSource(), hp=ac.createBiquadFilter(), lp=ac.createBiquadFilter(), w=ac.createGain(), hum=ac.createGain(), src=[n]; m.gain.setValueAtTime(.0001,t); m.gain.exponentialRampToValueAtTime(1,t+.5); m.gain.setValueAtTime(1,t+sec-.6); m.gain.exponentialRampToValueAtTime(.0001,t+sec); m.connect(bus);
+        n.buffer=noise; n.loop=true; hp.type='highpass'; hp.frequency.value=340; lp.type='lowpass'; lp.frequency.value=2600; w.gain.value=.11; n.connect(hp); hp.connect(lp); lp.connect(w); w.connect(m);
+        [[1.6,.05],[2.5,.03]].forEach(([fq,depth])=>{ const o=ac.createOscillator(), d=ac.createGain(); o.frequency.value=fq; d.gain.value=depth; o.connect(d); d.connect(w.gain); src.push(o); });
+        [1,2].forEach(k=>{ const o=ac.createOscillator(); o.frequency.setValueAtTime(170*k,t); o.frequency.linearRampToValueAtTime(230*k,t+sec*.7); o.frequency.linearRampToValueAtTime(190*k,t+sec); o.connect(hum); src.push(o); }); hum.gain.value=.012; hum.connect(m);
+        src.forEach(o=>{ o.start(t); o.stop(t+sec+.1); }); spinStop=()=>{ src.forEach(o=>{ try{ o.stop(); }catch(e){} }); }; },
+      door(){ if(!ready()) return; const t=ac.currentTime; tone(t,'sine',150,58,.14,.32); hiss(t,1800,1,.05,.09); },
+      spill(id){ if(ready()&&SPILL[id]) SPILL[id](); },
+      done(){ if(!ready()) return; const t=ac.currentTime; tone(t,'sine',880,880,.32,.09); tone(t+.14,'sine',1318.5,1318.5,.5,.08); },
+      stop(){ timers.forEach(clearTimeout); timers=[]; if(spinStop){ spinStop(); spinStop=null; } }
+    };
+  })();
+  const soundBtn=sec.querySelector('.lw-sound'), soundLabel=()=>{ soundBtn.textContent=snd.on?'Sound on':'Sound off'; soundBtn.setAttribute('aria-pressed',snd.on); }; soundLabel(); soundBtn.addEventListener('click',()=>{ snd.set(!snd.on); soundLabel(); });
+  const word=()=>input.value.trim().slice(0,14);
+  // walk up to a machine, put your word in, press start
+  let loading=-1, dismissed=-1;
+  function load(i){ if(busy>=0){ if(reveal) reveal(); return; } if(dismissed===i){ dismissed=-1; return; } if(loading===i) return; loading=i; screens(); stage.classList.add('busy'); els[i].scr.textContent='LOAD'; Object.assign(form.style,{left:pc(M[i].x,IW),top:pc(M[i].y,IH)}); form.hidden=false; input.focus({preventScroll:true}); input.select(); }
+  function unload(){ if(loading<0) return; loading=-1; form.hidden=true; stage.classList.remove('busy'); screens(); }
+  form.addEventListener('submit',ev=>{ ev.preventDefault(); const i=loading; form.hidden=true; loading=-1; wash(i); });
+  addEventListener('pointerdown',ev=>{ dismissed=-1; if(loading>=0&&!form.contains(ev.target)){ dismissed=loading; unload(); } });
+  function screens(){ const fs=stage.clientWidth*.034; els.forEach((e,i)=>{ if(busy===i||loading===i) return; e.scr.style.fontSize=fs+'px'; e.scr.textContent=M[i].name; }); }
+  new ResizeObserver(screens).observe(stage);
+  // the card: each material has its own medium, and the word is lettered onto it in that material's face
   function letters(f,text,W,H,pal,param,wm,seed){
     const lay=layoutText(text,H*.62/(1+f.m.t+f.m.b)*1.6,W,{...f.m,l:.25,r:.25},f.G,{oneLine:true});
     const c=document.createElement('canvas'); c.width=Math.ceil(W); c.height=Math.ceil(lay.H); f.render(c.getContext('2d'),c.width,c.height,lay,{pal,param,dpr:1,wm,transparent:true},seed);
     const k=Math.min(1,H/lay.H); return {c,w:c.width*k,h:c.height*k};
   }
-  const place=(ctx,L,cx,cy)=>ctx.drawImage(L.c,cx-L.w/2,cy-L.h/2,L.w,L.h);
-  const metal=(ctx,x,y,w,h)=>{ const g=ctx.createLinearGradient(x,y,x+w,y+h*.25); [[0,'#d9dce0'],[.18,'#f4f5f7'],[.32,'#b3b8bf'],[.5,'#e9ebee'],[.68,'#a7adb5'],[.84,'#eef0f2'],[1,'#c3c7cd']].forEach(([k,c])=>g.addColorStop(k,c)); return g; };
-  const shadow=(ctx,b,y)=>{ ctx.shadowColor=`rgba(0,0,0,${b})`; ctx.shadowBlur=40; ctx.shadowOffsetY=y; };
-  const T={
-    ganache:[
-      ['Cocoa tin',(ctx,S,f,txt,v)=>{ ctx.fillStyle='#e9e1d8'; ctx.fillRect(0,0,S,S); ctx.save(); shadow(ctx,.35,18); rrect(ctx,S*.12,S*.12,S*.76,S*.76,S*.05); ctx.fillStyle=metal(ctx,S*.12,S*.12,S*.76,S*.76); ctx.fill(); ctx.restore();
-        ctx.strokeStyle='rgba(0,0,0,.12)'; ctx.lineWidth=3; rrect(ctx,S*.16,S*.16,S*.68,S*.68,S*.035); ctx.stroke(); place(ctx,letters(f,txt,S*.62,S*.34,v.pal,v.param,v.wm,v.seed),S/2,S/2); }],
-      ['Cake top',(ctx,S,f,txt,v)=>{ ctx.fillStyle='#e7d3cd'; ctx.fillRect(0,0,S,S); ctx.save(); shadow(ctx,.3,16); ctx.fillStyle='#fbf3ea'; ctx.beginPath(); ctx.arc(S/2,S/2,S*.4,0,TAU); ctx.fill(); ctx.restore();
-        const P=f.pals[1]; for(let k=0;k<44;k++){ const a=TAU*k/44, x=S/2+Math.cos(a)*S*.37, y=S/2+Math.sin(a)*S*.37, g=ctx.createRadialGradient(x-5,y-6,1,x,y,S*.026); g.addColorStop(0,P.glint); g.addColorStop(.35,P.sheen); g.addColorStop(1,P.deep); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,S*.024,0,TAU); ctx.fill(); }
-        place(ctx,letters(f,txt,S*.6,S*.3,P,v.param,v.wm,v.seed),S/2,S/2); }],
-      ['Poster',(ctx,S,f,txt,v)=>{ const pal=v.pal; ctx.fillStyle='#d8cfc7'; ctx.fillRect(0,0,S,S); ctx.save(); shadow(ctx,.3,14); ctx.fillStyle=pal.surface; ctx.fillRect(S*.18,S*.08,S*.64,S*.84); ctx.restore();
-        place(ctx,letters(f,txt,S*.56,S*.34,{...pal,surface:pal.surface},v.param,v.wm,v.seed),S/2,S*.42);
-        ctx.fillStyle=isDark(pal.surface)?'rgba(255,255,255,.75)':'rgba(40,20,10,.7)'; ctx.font=`500 ${S*.022}px "JetBrains Mono",monospace`; ctx.textAlign='center'; ctx.fillText('SOFT MATTER COCOA BAR · NOV 14 – 15',S/2,S*.84); }]],
-    purl:[
-      ['Knit swatch',(ctx,S,f,txt,v)=>{ ctx.fillStyle='#ddd3c9'; ctx.fillRect(0,0,S,S); const lay=layoutText(txt,S*.18,S*.66,{...f.m,l:.35,r:.35,t:1.1,b:1.1},f.G,{oneLine:true});
-        const c=document.createElement('canvas'); c.width=S*.7; c.height=S*.7; f.render(c.getContext('2d'),c.width,c.height,{...lay,H:c.height},{pal:v.pal,param:v.param,dpr:1,wm:v.wm},v.seed);
-        ctx.save(); shadow(ctx,.35,18); rrect(ctx,S*.15,S*.15,S*.7,S*.7,S*.02); ctx.clip(); ctx.drawImage(c,S*.15,S*.15); ctx.restore(); }],
-      ['Tote',(ctx,S,f,txt,v)=>{ ctx.fillStyle='#e3d9cf'; ctx.fillRect(0,0,S,S); const bw=S*.62, bh=S*.56, x0=(S-bw)/2, y0=S*.34;
-        ctx.save(); ctx.lineWidth=S*.035; ctx.strokeStyle=mixHex(v.pal.bg,-.15); ctx.beginPath(); ctx.moveTo(x0+bw*.24,y0+4); ctx.bezierCurveTo(x0+bw*.24,S*.06,x0+bw*.76,S*.06,x0+bw*.76,y0+4); ctx.stroke(); ctx.restore();
-        const lay=layoutText(txt,bh*.3,bw,{...f.m,l:.3,r:.3,t:.9,b:.9},f.G,{oneLine:true}); const c=document.createElement('canvas'); c.width=bw; c.height=bh; f.render(c.getContext('2d'),bw,bh,{...lay,H:bh},{pal:v.pal,param:v.param,dpr:1,wm:v.wm},v.seed);
-        ctx.save(); shadow(ctx,.35,18); ctx.fillStyle=v.pal.bg; ctx.fillRect(x0,y0,bw,bh); ctx.restore(); ctx.drawImage(c,x0,y0); }]],
-    nacre:[
-      ['Velvet tray',(ctx,S,f,txt,v)=>{ ctx.fillStyle='#e6cfc9'; ctx.fillRect(0,0,S,S); ctx.save(); shadow(ctx,.3,16); rrect(ctx,S*.08,S*.18,S*.84,S*.64,S*.04); ctx.fillStyle='#ecd2cd'; ctx.fill(); ctx.restore();
-        rrect(ctx,S*.13,S*.25,S*.74,S*.5,S*.025); ctx.fillStyle='#1b2649'; ctx.fill(); const g=ctx.createRadialGradient(S*.45,S*.45,0,S/2,S/2,S*.5); g.addColorStop(0,'rgba(255,255,255,.08)'); g.addColorStop(1,'rgba(0,0,0,.35)'); ctx.fillStyle=g; ctx.fill();
-        place(ctx,letters(f,txt,S*.7,S*.4,f.pals[1],v.param,v.wm,v.seed),S/2,S/2); }],
-      ['Name card',(ctx,S,f,txt,v)=>{ const pal=v.pal; ctx.fillStyle='#d9c6c2'; ctx.fillRect(0,0,S,S); ctx.save(); shadow(ctx,.3,14); ctx.fillStyle=pal.surface; rrect(ctx,S*.1,S*.22,S*.8,S*.56,S*.02); ctx.fill(); ctx.restore();
-        place(ctx,letters(f,txt,S*.76,S*.46,pal,v.param,v.wm,v.seed),S/2,S*.46);
-        ctx.fillStyle=isDark(pal.surface)?'rgba(255,255,255,.7)':'rgba(60,30,30,.65)'; ctx.font=`500 ${S*.02}px "JetBrains Mono",monospace`; ctx.textAlign='center'; ctx.fillText('HAND-KNOTTED ON SILK · SOFT MATTER',S/2,S*.72); }]],
-    picot:[
-      ['Invitation',(ctx,S,f,txt,v)=>{ const pal=v.pal; ctx.fillStyle='#d8d3d0'; ctx.fillRect(0,0,S,S); ctx.save(); shadow(ctx,.35,16); ctx.fillStyle=pal.surface; ctx.fillRect(S*.16,S*.1,S*.68,S*.8); ctx.restore();
-        ctx.strokeStyle='#c9a96a'; ctx.lineWidth=2; ctx.strokeRect(S*.19,S*.13,S*.62,S*.74); place(ctx,letters(f,txt,S*.56,S*.36,pal,v.param,v.wm,v.seed),S/2,S*.46);
-        ctx.fillStyle=isDark(pal.surface)?'rgba(255,255,255,.75)':'rgba(30,20,20,.7)'; ctx.font=`italic 400 ${S*.026}px "Hanken Grotesk",sans-serif`; ctx.textAlign='center'; ctx.fillText('the pleasure of your company',S/2,S*.74); }],
-      ['Hatbox lid',(ctx,S,f,txt,v)=>{ ctx.fillStyle='#e8d6d3'; ctx.fillRect(0,0,S,S); ctx.save(); shadow(ctx,.35,18); const g=ctx.createRadialGradient(S*.42,S*.4,0,S/2,S/2,S*.42); g.addColorStop(0,mixHex(v.pal.surface,.12)); g.addColorStop(1,mixHex(v.pal.surface,-.2)); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(S/2,S/2,S*.4,0,TAU); ctx.fill(); ctx.restore();
-        place(ctx,letters(f,txt,S*.62,S*.3,v.pal,v.param,v.wm,v.seed),S/2,S/2); }]]
-  };
-  let lastT={};
+  const hue=(name,fg,bg)=>({name,pal:f=>f.custom(fg,bg)});
+  const MEDIA={
+    ganache:{colors:[hue('Dark chocolate','#4a2114','#a79f92'),hue('Milk chocolate','#8a5230','#a79f92'),hue('Strawberry','#b8455e','#a79f92'),hue('Matcha','#566f35','#a79f92')],v:[{img:'tin',cy:.505,w:.58,h:.24}]},
+    purl:{colors:[hue('Rose','#c9737f','#f1e6d6'),hue('Navy','#2e3a68','#f1e6d6'),hue('Moss','#6c8a5f','#f1e6d6'),hue('Mustard','#c6922c','#f1e6d6')],v:[{img:'hoop',cy:.53,w:.4,h:.15},{img:'hoop-2',cy:.505,w:.42,h:.15}]},
+    nacre:{colors:[{name:'White pearl',pal:f=>f.pals[1]},hue('Rose pearl','#f0c3c6','#1b2649'),hue('Gold pearl','#e7c47c','#1b2649'),hue('Black pearl','#3b3a44','#1b2649')],v:[{img:'mirror',cy:.52,w:.5,h:.28},{img:'mirror-2',cy:.53,w:.5,h:.28},{img:'mirror-3',cy:.5,w:.36,h:.26}]},
+    picot:{colors:[hue('Ivory','#fff6ea','#7a5230'),hue('Blush','#f6c6cf','#7a5230'),hue('Black','#1e1719','#7a5230'),hue('Lilac','#d6c8ee','#7a5230')],v:[{img:'board',cy:.47,w:.8,h:.2},{img:'board-2',cy:.535,w:.62,h:.16},{img:'board-3',cy:.5,w:.8,h:.2}]}};
+  const pic=v=>{ if(!v.pic){ v.pic=new Image(); v.pic.src=`${ASSET}obj-${v.img}.webp`; } return v.pic; };
+  for(const k in MEDIA) pic(MEDIA[k].v[0]);
+  // the lettering alone, trimmed to its ink: it is what the transparent download gives you
+  function inked(f,txt,pal,param,wm,seed){ const S=900, L=letters(f,txt,S*1.6,S*.5,pal,param,wm,seed).c, W=L.width, H=L.height, d=L.getContext('2d').getImageData(0,0,W,H).data; let x0=W,x1=0,y0=H,y1=0;
+    for(let y=0;y<H;y+=2) for(let x=0;x<W;x+=2) if(d[(y*W+x)*4+3]>40){ if(x<x0) x0=x; if(x>x1) x1=x; if(y<y0) y0=y; if(y>y1) y1=y; }
+    const c=document.createElement('canvas'); c.width=Math.max(1,x1-x0+8); c.height=Math.max(1,y1-y0+8); c.getContext('2d').drawImage(L,x0-4,y0-4,c.width,c.height,0,0,c.width,c.height); return c; }
+  function paint(ctx,S,v,ink){ if(pic(v).naturalWidth) ctx.drawImage(v.pic,0,0,S,S); else { ctx.fillStyle='#efe5df'; ctx.fillRect(0,0,S,S); }
+    const k=Math.min(S*v.w/ink.width,S*v.h/ink.height), dw=ink.width*k, dh=ink.height*k; ctx.save(); ctx.shadowColor='rgba(20,8,4,.45)'; ctx.shadowBlur=S*.006; ctx.shadowOffsetX=S*.002; ctx.shadowOffsetY=S*.003; ctx.drawImage(ink,(S-dw)/2,S*v.cy-dh/2,dw,dh); ctx.restore(); }
+  const washes={}, kept={};
   function makeObject(i){
-    const m=M[i], f=FT[m.id], R=rng((Math.random()*1e9)|0), S=900;
-    const pals=f.pals.filter(p=>!p.page), opts=T[m.id]; let k=Math.floor(R()*opts.length); if(opts.length>1&&k===lastT[m.id]) k=(k+1)%opts.length; lastT[m.id]=k;
-    const typed=word(), txt=typed||pick(R,WORDS[m.id]), wi=1+Math.floor(R()*3), [,wname,wm]=WEIGHTS[wi];
-    const pal=pick(R,pals), param=f.param.min+(f.param.max-f.param.min)*(.25+R()*.5), v={pal,param,wm,seed:(R()*1e6)|0};
-    const c=document.createElement('canvas'); c.width=c.height=S; const ctx=c.getContext('2d');
-    try{ opts[k][1](ctx,S,f,m.id==='nacre'?txt:txt.toUpperCase(),v); }catch(e){ console.error(e); }
-    return {c,title:`${opts[k][0]} · ${f.name}`,sub:`${wname} · ${pal.name} · “${txt}”`,file:`soft-matter-${m.id}-${opts[k][0].toLowerCase().replace(/ /g,'-')}.png`};
+    const m=M[i], f=FT[m.id], media=MEDIA[m.id], R=rng((Math.random()*1e9)|0), S=900, typed=word(), list=WORDS[m.id], raw=typed||list[Math.floor(R()*list.length)], txt=m.id==='nacre'?raw:raw.toUpperCase(), [,wname,wm]=WEIGHTS[m.id==='purl'?1:1+Math.floor(R()*3)];
+    const n=washes[m.id]=(washes[m.id]??-1)+1, colour=media.colors[n%media.colors.length], ready=media.v.filter(v=>pic(v).naturalWidth), v=kept[m.id]??(ready.length?ready[Math.floor(R()*ready.length)]:media.v[0]); delete kept[m.id];
+    const c=document.createElement('canvas'); c.width=c.height=S; let ink=c;
+    try{ ink=inked(f,txt,colour.pal(f),f.param.min+(f.param.max-f.param.min)*(.25+R()*.5),wm,(R()*1e6)|0); paint(c.getContext('2d'),S,v,ink); }catch(e){ console.error(e); }
+    return {c,ink,v,machine:m.id,title:f.name,sub:`${colour.name} · “${raw}”`,file:`soft-matter-${m.id}-${raw.toLowerCase().replace(/[^a-z0-9]+/g,'-')||'word'}-${colour.name.toLowerCase().replace(/ /g,'-')}.png`};
   }
   // wash
   let busy=-1;
@@ -2376,37 +2392,37 @@ function laundry(){
       b.style.left=(m.x*sw)+'px'; b.style.top=(m.y*sw)+'px'; stage.insertBefore(b,out);
       const dx=(Math.random()*2-1)*90*sw*3, dy=-(40+Math.random()*220)*sw*2;
       b.animate([{transform:'translate(0,0) scale(.3)',opacity:0},{opacity:1,offset:.15},{transform:`translate(${dx}px,${dy}px) scale(1)`,opacity:0}],{duration:1600+Math.random()*1400,easing:'cubic-bezier(.2,.6,.3,1)'}).onfinish=()=>b.remove(); } }
-  let current=null, reveal=null;
+  let current=null, reveal=null, clear=false;
+  // the card shows the finished image, or just the lettering on a checkerboard, ready to take away
+  function paintCard(){ const card=out.querySelector('.lw-card'), cv=card.querySelector('canvas'), S=current.c.width, g=cv.getContext('2d'); cv.width=cv.height=S;
+    if(clear){ const q=S/30; for(let y=0;y<30;y++) for(let x=0;x<30;x++){ g.fillStyle=(x+y)%2?'#d9d4cf':'#f4f1ee'; g.fillRect(x*q,y*q,q,q); } const ink=current.ink, k=Math.min(S*.84/ink.width,S*.5/ink.height); g.drawImage(ink,(S-ink.width*k)/2,(S-ink.height*k)/2,ink.width*k,ink.height*k); } else g.drawImage(current.c,0,0);
+    card.querySelector('[data-a=save]').textContent=clear?'Download transparent PNG':'Save image'; card.querySelector('[data-a=ink]').textContent=clear?'Back to the card':'Transparent'; card.querySelector('.status').textContent=''; }
   function show(item,from){
     current=item; const card=out.querySelector('.lw-card'), cv=card.querySelector('canvas');
-    cv.width=item.c.width; cv.height=item.c.height; cv.getContext('2d').drawImage(item.c,0,0);
+    clear=false; paintCard();
     card.querySelector('.t').textContent=item.title; card.querySelector('.s').textContent=item.sub; card.querySelector('.status').textContent='';
-    card.querySelector('[data-a=hang]').hidden=!!item.hung; out.hidden=false;
+    out.hidden=false;
     if(!reduce&&from){ const r=stage.getBoundingClientRect(), sw=stage.clientWidth/IW, dx=from.x*sw-r.width/2, dy=from.y*sw-r.height/2;
       card.animate([{transform:`translate(${dx}px,${dy}px) scale(.15) rotate(-14deg)`,opacity:.2},{transform:'none',opacity:1}],{duration:650,easing:'cubic-bezier(.2,.9,.25,1.15)'}); }
-    card.querySelector('[data-a=again]').focus({preventScroll:true});
+    card.querySelector('[data-a=save]').focus({preventScroll:true});
   }
-  function close(){ stopFx(); out.hidden=true; const e=els[busy]; busy=-1; screens(); if(!e) return;
+  function close(){ stopFx(); snd.stop(); out.hidden=true; stage.classList.remove('busy'); const e=els[busy]; busy=-1; screens(); if(!e) return;
     e.w.classList.remove('spin','drain','tumble'); if(e.w.classList.contains('flat')) e.w.classList.remove('open'); else swingDoor(e,0,reduce?0:480,()=>e.w.classList.remove('open')); }
   function wash(i){
-    if(busy>=0){ if(reveal) reveal(); return; } busy=i; const e=els[i], flat=!e.sheet.naturalWidth;
+    if(busy>=0){ if(reveal) reveal(); return; } busy=i; stage.classList.add('busy'); const e=els[i], flat=!e.sheet.naturalWidth;
     e.w.classList.toggle('flat',flat); if(!flat&&!reduce){ if(M[i].id==='nacre') tumblePearls(i); if(M[i].id==='ganache') tumbleCocoa(i); if(M[i].id==='purl') tumbleWool(i); if(M[i].id==='picot') tumbleLace(i); }
-    e.scr.textContent='WASHING'; e.w.classList.add('spin');
-    const item=makeObject(i);
-    setTimeout(()=>{ e.w.classList.remove('spin','tumble'); e.w.classList.add('open'); e.scr.textContent='DONE'; if(e.sheen) e.sheen.classList.remove('on'); if(!flat) swingDoor(e,1,reduce?0:900); bubbles(i);
+    e.scr.textContent='WASHING'; e.w.classList.add('spin'); snd.spin(SPIN/1000);
+    MEDIA[M[i].id].v.forEach(pic);
+    setTimeout(()=>{ e.w.classList.remove('spin','tumble'); e.w.classList.add('open'); e.scr.textContent='DONE'; if(e.sheen) e.sheen.classList.remove('on'); if(!flat) swingDoor(e,1,reduce?0:900); snd.door(); bubbles(i);
       // the spill waits for the door to clear, and the card for the spill to settle; clicking the washers skips ahead
-      setTimeout(()=>{ startFx(i); const timer=setTimeout(()=>reveal(),reduce?0:HOLD[M[i].id]); reveal=()=>{ clearTimeout(timer); reveal=null; show(item,M[i]); }; },reduce?0:420); },reduce?0:SPIN);
+      setTimeout(()=>{ startFx(i); snd.spill(M[i].id); const timer=setTimeout(()=>reveal(),reduce?0:HOLD[M[i].id]); reveal=()=>{ clearTimeout(timer); reveal=null; snd.done(); show(makeObject(i),M[i]); }; },reduce?0:420); },reduce?0:SPIN);
   }
-  const hung=[];
-  function hang(item){ if(item.hung) return; item.hung=true; const li=document.createElement('li'); li.style.transform=`rotate(${(Math.random()*8-4).toFixed(1)}deg)`;
-    const b=document.createElement('button'); b.type='button'; b.setAttribute('aria-label',item.title); const t=document.createElement('canvas'); t.width=t.height=216; t.getContext('2d').drawImage(item.c,0,0,216,216);
-    b.append(t); b.addEventListener('click',()=>show(item,null)); li.append(b); list.querySelector('.empty')?.remove(); list.prepend(li); hung.push(item);
-    if(!reduce) li.animate([{transform:`translateY(-30px) rotate(-10deg)`,opacity:0},{transform:li.style.transform,opacity:1}],{duration:500,easing:'cubic-bezier(.2,.9,.3,1.3)'}); }
   out.addEventListener('click',ev=>{ if(ev.target===out) close(); });
-  out.querySelector('[data-a=again]').addEventListener('click',()=>{ const i=busy; close(); if(i>=0) setTimeout(()=>wash(i),520); });
-  out.querySelector('[data-a=hang]').addEventListener('click',()=>{ hang(current); close(); });
-  out.querySelector('[data-a=save]').addEventListener('click',async ev=>{ const st=out.querySelector('.status'); setStatus(st,'Preparing…'); saveFile(st,current.file,await blobOf(current.c)); });
-  addEventListener('keydown',ev=>{ if(ev.key==='Escape'&&!out.hidden) close(); });
+  out.querySelector('[data-a=save]').addEventListener('click',async()=>{ const st=out.querySelector('.status'); setStatus(st,'Preparing…'); if(clear) saveFile(st,current.file.replace('.png','-transparent.png'),await blobOf(current.ink)); else saveFile(st,current.file,await blobOf(current.c)); });
+  out.querySelector('[data-a=ink]').addEventListener('click',()=>{ clear=!clear; paintCard(); });
+  out.querySelector('[data-a=close]').addEventListener('click',()=>close());
+  out.querySelector('[data-a=again]').addEventListener('click',()=>{ const i=busy; kept[current.machine]=current.v; close(); if(i>=0) setTimeout(()=>wash(i),520); });
+  addEventListener('keydown',ev=>{ if(ev.key!=='Escape') return; if(!out.hidden) close(); else unload(); });
   screens();
   return {start(){ screens(); }};
 }

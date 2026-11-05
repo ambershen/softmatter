@@ -1,11 +1,11 @@
 # Renders the Laundromat's door swings, empty drums and pearl pile, registered to the room photo.
-# blender -b --python tools/laundromat.py -- <room.jpg> <outdir> <plates|doors|pearls|wool|lace> [machine]
+# blender -b --python tools/laundromat.py -- <room.jpg> <outdir> <plates|doors|pearls|wool|lace|objects> [machine]
 import bpy, bmesh, math, os, random, sys
 from mathutils import Vector
 
 ARGS = sys.argv[sys.argv.index('--') + 1:]
 ROOM, OUT, MODE = ARGS[0], ARGS[1], ARGS[2]
-ONLY = int(ARGS[3]) if len(ARGS) > 3 else None
+ONLY = int(ARGS[3]) if len(ARGS) > 3 and ARGS[3].isdigit() else None
 os.makedirs(OUT, exist_ok=True)
 
 # The photo's camera: 513px per metre on the washer fronts, horizon at mid-frame, 5m back.
@@ -196,7 +196,8 @@ def pixels(path):
 def save(a, path, q=86):
     import numpy as np
     h, w, _ = a.shape; im = bpy.data.images.new('o', w, h, alpha=True); im.pixels.foreach_set(np.ascontiguousarray(a, np.float32).ravel())
-    s = bpy.context.scene; f = s.render.image_settings; f.file_format = 'JPEG' if path.endswith('.jpg') else 'WEBP'; f.color_mode = 'RGB' if path.endswith('.jpg') else 'RGBA'; f.quality = q
+    s = bpy.context.scene; s.view_settings.view_transform = 'Standard'; s.view_settings.look = 'None'   # pixels in, same pixels out
+    f = s.render.image_settings; f.file_format = 'JPEG' if path.endswith('.jpg') else 'WEBP'; f.color_mode = 'RGB' if path.endswith('.jpg') else 'RGBA'; f.quality = q
     im.save_render(path, scene=s); bpy.data.images.remove(im)
 
 def render_png(s, path):
@@ -301,3 +302,8 @@ if MODE == 'lace':       # the lace drum's heap
         a = a.copy(); a[..., 3] = alpha; save(np.ascontiguousarray(a[::-1]), os.path.join(OUT, name), 88)
     h = 108; c = (np.arange(2 * h * 2) + .5) / 2 - h; x, y = np.meshgrid(c, c); a = sample(719 + x, 1043 + y)
     write('lace-heap.webp', a, soft(y, -74, -50) * (1 - soft(np.hypot(x, y), 99, 103)) * soft(np.hypot(x + 106, y - 20), 7, 13))
+
+if MODE == 'objects':    # the card media and the wide backdrop in reference/, ready for the page
+    for name in ('mirror', 'mirror-2', 'mirror-3', 'tin', 'hoop', 'hoop-2', 'board', 'board-2', 'board-3', 'panorama'):
+        a = pixels(os.path.join(os.path.dirname(OUT.rstrip('/')), '..', 'reference', name + '.png')); a[..., 3] = 1
+        save(a, os.path.join(OUT, f'obj-{name}.webp'), 86)
