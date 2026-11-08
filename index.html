@@ -1507,7 +1507,7 @@ const T3D=(()=>{
     const cam=new THREE.PerspectiveCamera(24,2,.1,1000), group=new THREE.Group(), inner=new THREE.Group(); group.add(inner); scene.add(group);
     scene.add(new THREE.HemisphereLight(0xfff4ea,0x1a1a1e,.45));
     const key=new THREE.DirectionalLight(0xfff0e0,2.2); key.castShadow=true; key.shadow.mapSize.set(1024,1024); key.shadow.bias=-.0005; key.shadow.normalBias=.04; scene.add(key,key.target);
-    const catcher=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.ShadowMaterial({opacity:.28})); catcher.receiveShadow=true; scene.add(catcher);
+    const catcher=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.ShadowMaterial({opacity:.28,depthWrite:false})); catcher.receiveShadow=true; catcher.renderOrder=-1; scene.add(catcher);
     v={scene,cam,group,inner,key,catcher,mats:{},pieces:[],beads:null,sig:'',prog:1,t0:0,W:0,H:0,bw:1,bh:1,dist:10,yaw:0,pitch:0,ty:0,tp:0,lx:-.3,ly:-.4,drag:null};
     // drag to turn the word; the key light follows the pointer
     const cv=f.canvas, on=()=>f.state.mode==='3d';
@@ -1518,7 +1518,7 @@ const T3D=(()=>{
     cv.addEventListener('dblclick',()=>{ if(on()){ v.ty=v.tp=0; wake(); } });
     io.observe(cv); views.set(f,v); return v;
   }
-  function clear(v){ v.inner.traverse(o=>{ if(o.isInstancedMesh) o.dispose(); else if(o.geometry&&o.geometry!==sphere) o.geometry.dispose(); }); v.inner.clear(); v.pieces=[]; v.beads=null; }
+  function clear(v){ v.inner.traverse(o=>{ if(o.isInstancedMesh) o.dispose(); else if(o.geometry&&o.geometry!==sphere) o.geometry.dispose(); }); if(v.cloth){ v.cloth.tex.dispose(); v.cloth.mesh.material.dispose(); } v.inner.clear(); v.pieces=[]; v.beads=null; v.cloth=null; }
 
   // Ganache: each stroke is one squeeze of the piping bag, as in the demo hero, with drips set by the slider
   function ganache(v,lay,o,R,grow){
@@ -1563,7 +1563,37 @@ const T3D=(()=>{
     v.beads={pm,tm,n:beads.length,after:order.map(x=>x[0])};
     v.depth=rp*2;
   }
+  // Purl and Picot are fabrics, so their 3D is the 2D lettering on cloth: a knitted panel on a rod, or lace floating over its board
+  function cloth(v,f,txt,W,cap0,o,st,pal,grow){
+    const lace=f.id==='picot', S=2, TW=Math.round(W*S), lay=layoutText(txt,cap0*S,TW,f.m,f.G,{wTrack:(o.wm-1)*f.wTrack}), TH=Math.max(2,Math.round(lay.H));
+    let x0=TW,x1=0; lay.glyphs.forEach(g=>g.strokes.forEach(s=>s.forEach(q=>{ x0=Math.min(x0,q[0]); x1=Math.max(x1,q[0]); })));
+    const CW=Math.min(TW,Math.ceil(x1+Math.max(x0,lay.cap*.4)));
+    const tc=document.createElement('canvas'); tc.width=CW; tc.height=TH;
+    f.render(tc.getContext('2d'),CW,TH,lay,{pal,param:st.param,dpr:1,wm:o.wm,transparent:lace},st.seed);
+    const tex=new THREE.CanvasTexture(tc); tex.colorSpace=THREE.SRGBColorSpace; tex.anisotropy=gl.capabilities.getMaxAnisotropy();
+    const bw=10*W/cap0*CW/TW, bh=bw*TH/CW, SX=lace?120:96, SY=Math.max(8,Math.round(SX*TH/CW));
+    const geo=new THREE.PlaneGeometry(bw,bh,SX,SY);
+    const mat=lace?new THREE.MeshStandardMaterial({map:tex,emissiveMap:tex,emissive:0xffffff,emissiveIntensity:.42,transparent:true,alphaTest:.2,side:THREE.DoubleSide,roughness:.85})
+      :new THREE.MeshStandardMaterial({map:tex,bumpMap:tex,bumpScale:2,roughness:.95,side:THREE.DoubleSide});
+    const mesh=new THREE.Mesh(geo,mat); mesh.castShadow=true; mesh.position.set(bw/2,-bh/2,0);
+    // lace casts the shadow of its holes, not of its rectangle
+    if(lace) mesh.customDepthMaterial=new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking,map:tex,alphaTest:.2});
+    v.inner.add(mesh); grow(0,0,0); grow(bw,bh,0);
+    if(!lace){ const rod=new THREE.Mesh(new THREE.CylinderGeometry(bw*.006,bw*.006,bw*1.06,20),v.mats.rod||(v.mats.rod=new THREE.MeshStandardMaterial({color:0xcfd3d8,metalness:.85,roughness:.28})));
+      rod.rotation.z=Math.PI/2; rod.position.set(bw/2,bw*.005,0); rod.castShadow=true; v.inner.add(rod); grow(-bw*.03,-bw*.012,0); grow(bw*1.03,0,0); }
+    v.cloth={mesh,geo,tex,base:geo.attributes.position.array.slice(),bw,bh,lace};
+    v.depth=lace?bw*.02:bw*.06;
+  }
+  function wave(v,now){
+    const c=v.cloth, pos=c.geo.attributes.position.array, b=c.base, t=reduce?0:now/1000, k=10/c.bw, a=c.bw*(c.lace?.006:.016);
+    for(let i=0;i<pos.length;i+=3){ const x=b[i]*k, y=b[i+1]*k;
+      if(c.lace) pos[i+2]=a*(Math.sin(x*.8+t*.9+y*.5)*.6+Math.sin(x*1.7-t*1.2)*.25);
+      else { const hang=(c.bh/2-b[i+1])/c.bh; pos[i+2]=a*(Math.sin(x*1.1+t*1.6+y*.6)*(.15+hang)+Math.sin(x*2.3-t*2.2+y*1.4)*.3*hang+Math.sin(x*.5+t*.7)*.75*hang); } }
+    c.geo.attributes.position.needsUpdate=true; c.geo.computeVertexNormals();
+  }
   function progress(v,k){
+    // the knit unrolls from its rod; the lace settles in
+    if(v.cloth){ const c=v.cloth; if(c.lace){ c.mesh.material.opacity=k; c.mesh.position.z=(1-k)*c.bw*.04; } else { c.mesh.scale.y=Math.max(.001,k); c.mesh.position.y=-c.bh*k/2; } return; }
     if(v.beads){ const b=v.beads, n=Math.ceil(b.n*k); b.pm.count=n; let t=0; while(t<b.after.length&&b.after[t]<n) t++; b.tm.count=t; return; }
     const total=v.pieces.reduce((s,p)=>s+p.len,0); let budget=k*total;
     for(const p of v.pieces){
@@ -1582,16 +1612,16 @@ const T3D=(()=>{
   // called by the Typefaces view whenever the card redraws
   function update(f,txt,W,pal){
     init(); const v=view(f), st=f.state, wm=WEIGHTS[st.weight][2], cap0=clamp(W*.112,40,128)*f.capScale;
-    const sig=[txt,st.weight,st.param,st.seed,Math.round(W/60)].join('|');
+    const sig=[txt,st.weight,st.param,st.seed,Math.round(W/60),f.id==='purl'||f.id==='picot'?JSON.stringify(pal):''].join('|');
     if(sig!==v.sig){ v.sig=sig; clear(v);
       // lay the text out at cap height 10, wrapped exactly as the 2D specimen wraps it
       const lay=layoutText(txt,10,W*10/cap0,f.m,f.G,{wTrack:(wm-1)*f.wTrack}), o={param:st.param,wm};
       const bb=[1e9,-1e9,1e9,-1e9], grow=(x,y,r)=>{ bb[0]=Math.min(bb[0],x-r); bb[1]=Math.max(bb[1],x+r); bb[2]=Math.min(bb[2],y-r); bb[3]=Math.max(bb[3],y+r); };
-      if(f.id==='ganache') ganache(v,lay,o,rng(st.seed),grow); else nacre(v,lay,o,st.seed,grow);
+      if(f.id==='ganache') ganache(v,lay,o,rng(st.seed),grow); else if(f.id==='nacre') nacre(v,lay,o,st.seed,grow); else cloth(v,f,txt,W,cap0,o,st,pal,grow);
       if(bb[0]>bb[1]){ bb[0]=bb[2]=0; bb[1]=bb[3]=10; }
       v.bw=bb[1]-bb[0]; v.bh=bb[3]-bb[2]; v.inner.position.set(-(bb[0]+bb[1])/2,(bb[2]+bb[3])/2,0);
       const big=Math.max(v.bw,v.bh);
-      v.catcher.scale.set(big*4,big*4,1); v.catcher.position.z=-v.depth*(v.beads?.75:1.6); v.catcher.material.opacity=v.beads?.2:.28;
+      v.catcher.scale.set(big*4,big*4,1); v.catcher.position.z=-v.depth*(v.beads?.75:v.cloth?1:1.6); v.catcher.material.opacity=v.beads?.2:v.cloth?.22:.28;
       Object.assign(v.key.shadow.camera,{left:-big*.75,right:big*.75,top:big*.75,bottom:-big*.75,near:.1,far:big*6}); v.key.shadow.camera.updateProjectionMatrix();
       v.prog=reduce?1:0; v.t0=0; progress(v,v.prog); v.W=0;
     }
@@ -1617,6 +1647,7 @@ const T3D=(()=>{
     for(const f of active){
       const v=views.get(f); if(f.state.mode!=='3d'||!v.W||f.el.closest('[hidden]')||seen.get(f.canvas)===false) continue;
       if(v.prog<1){ if(!v.t0) v.t0=now; v.prog=Math.min(1,(now-v.t0)/1600); progress(v,ease(v.prog)); again=true; }
+      if(v.cloth){ wave(v,now); if(!reduce) again=true; }
       const sway=reduce||v.drag?0:Math.sin(now/2600)*.14;
       v.yaw+=(v.ty+sway-v.yaw)*.08; v.pitch+=(v.tp-v.pitch)*.08; v.group.rotation.set(v.pitch,v.yaw,0);
       if(Math.abs(v.ty+sway-v.yaw)>1e-3||Math.abs(v.tp-v.pitch)>1e-3) again=true;
@@ -1624,7 +1655,7 @@ const T3D=(()=>{
     }
     if(again) raf=requestAnimationFrame(frame);
   }
-  return {update,hide,faces:new Set(['ganache','nacre'])};
+  return {update,hide,faces:new Set(['ganache','nacre','purl','picot'])};
 })();
 
 /* ================= Typefaces view ================= */
