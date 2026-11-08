@@ -13,7 +13,7 @@ The site opens on the Laundromat; the nav appears after your first wash. Three v
 
 - **Typefaces**: live specimens with weight, colorway, custom colours and material controls, plus downloads (font family, PNG lettering, glyph pack, @font-face code) on every card.
 - **Soft Matter (demo)**: a fictional winter market site set in the four faces.
-- **Laundromat**: type a word on any machine's screen, then pick one of four washing machines (cocoa, wool, pearl, lace); each wash turns out a one-off object lettered in that face, which you can hang on the line or download.
+- **Laundromat**: type a word on any machine's screen, then wash it in one of four machines (cocoa, wool, pearl, lace). Each wash ends on a card with the word lettered in that face on its own medium (a chocolate tray, an embroidery hoop, a mirror, a wooden board), which you can save as an image or as transparent lettering.
 
 The material renders are procedural (Canvas 2D, plus Three.js for the 3D pieces). The Laundromat's door swings, empty drums and pearl heap are Blender renders registered to the room photo; `tools/laundromat.py` regenerates them into `assets/laundry/` (usage is at the top of the script). The `.otf` files are monochrome outline versions generated from the same data with [opentype.js](https://github.com/opentypejs/opentype.js).
 
