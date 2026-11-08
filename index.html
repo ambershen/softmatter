@@ -285,7 +285,14 @@ output{ font-family:var(--mono); font-size:12px; text-align:right; white-space:n
 #v-in-use .lit:hover::after{ opacity:1 }
 #v-in-use .hero3d{ position:relative; max-width:1400px; margin:0 auto }
 #v-in-use #hero3d{ display:block; width:100% }
-#v-in-use .hint3d{ position:absolute; right:max(clamp(16px,4vw,48px), env(safe-area-inset-right,0px)); bottom:6px; margin:0; color:#77766f; font-size:11px }
+#v-in-use .type3d{ display:flex; gap:6px; width:min(340px,calc(100% - 32px)); margin:4px auto 0; padding:5px; border-radius:999px; background:rgba(255,255,255,.06); box-shadow:inset 0 0 0 1px rgba(255,255,255,.12) }
+#v-in-use .type3d[hidden]{ display:none }
+#v-in-use .type3d[hidden]+.hint3d{ bottom:6px }
+@media (hover:none){ #v-in-use .hint3d{ display:none } }
+#v-in-use .type3d input{ flex:1; min-width:0; border:0; outline:none; background:transparent; color:inherit; font:500 16px/1 "Hanken Grotesk",sans-serif; letter-spacing:.04em; text-transform:uppercase; padding:8px 8px 8px 14px }
+#v-in-use .type3d button{ flex:none; border:0; border-radius:999px; background:#f0e2c4; color:#2a1d16; font:600 14px "Hanken Grotesk",sans-serif; padding:8px 16px; cursor:pointer }
+#v-in-use .type3d button:hover{ background:#fff3dc }
+#v-in-use .hint3d{ position:absolute; right:max(clamp(16px,4vw,48px), env(safe-area-inset-right,0px)); bottom:58px; margin:0; color:#77766f; font-size:11px }
 #v-in-use .objrow{ display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1fr); gap:56px; align-items:center; padding-block:16px 72px }
 #v-in-use .obj{ margin:0; display:flex; flex-direction:column; gap:12px; min-width:0 }
 #v-in-use .obj canvas{ display:block; width:100% }
@@ -464,6 +471,7 @@ output{ font-family:var(--mono); font-size:12px; text-align:right; white-space:n
     <div class="in"><div class="meta lbl"><span>Winter makers' market</span><span>Nov 14 – 15</span><span>10 am – 6 pm</span><span>Dogpatch Warehouse 3</span></div></div>
     <div class="hero3d">
       <canvas id="hero3d" role="img" aria-label="SOFT MATTER piped in glossy white chocolate, rendered in 3D"></canvas>
+      <form class="type3d" hidden><input value="Soft Matter" maxlength="24" autocomplete="off" spellcheck="false" aria-label="Type a word to pipe in 3D chocolate"><button type="submit">Pipe it</button></form>
       <p class="hint3d lbl">Move your cursor to move the light</p>
     </div>
     <div class="in hero-grid">
@@ -1635,11 +1643,19 @@ function hero3D(){
   const mat=new THREE.MeshPhysicalMaterial({color:0xf0e2c4,roughness:.32,clearcoat:1,clearcoatRoughness:.1,sheen:.6,sheenColor:new THREE.Color(0xfff6e8)});
   const group=new THREE.Group(); scene.add(group);
   const pieces=[]; const m={...f.m,l:0,r:0,t:0,b:0};
-  const lines=['SOFT','MATTER'].map(t=>{ const L=layoutText(t,10,1e6,m,f.G,{oneLine:true}); let w=0; L.glyphs.forEach(g=>g.strokes.forEach(s=>s.forEach(q=>w=Math.max(w,q[0])))); return {L,w}; });
-  const maxW=Math.max(...lines.map(l=>l.w));
   const sphere=new THREE.SphereGeometry(1,24,16);
+  let maxW=0, total=0;
+  // two words or more break onto two lines at the space nearest the middle
+  function split(text){ const w=text.trim().split(/\s+/).filter(Boolean); if(w.length<2) return [w[0]||'SOFT'];
+    let best=1, d=1e9; for(let k=1;k<w.length;k++){ const a=w.slice(0,k).join(' ').length, b=w.slice(k).join(' ').length; if(Math.abs(a-b)<d){ d=Math.abs(a-b); best=k; } }
+    return [w.slice(0,best).join(' '),w.slice(best).join(' ')]; }
+  function build(text){
+  group.traverse(o=>{ if(o.geometry&&o.geometry!==sphere) o.geometry.dispose(); }); group.clear(); pieces.length=0;
+  const R=rng(21);
+  const lines=split(text).map(t=>{ const L=layoutText(t,10,1e6,m,f.G,{oneLine:true}); let w=0; L.glyphs.forEach(g=>g.strokes.forEach(s=>s.forEach(q=>w=Math.max(w,q[0])))); return {L,w}; });
+  maxW=Math.max(...lines.map(l=>l.w));
   lines.forEach(({L,w},li)=>{
-    const ox=-w/2, oy=li*15-12.5;
+    const ox=-w/2, oy=li*15-5-(lines.length-1)*7.5;
     for(const g of L.glyphs){
       const ang=(R()-.5)*.15, dy=(R()-.5)*.7; let cx=0,cn=0; g.strokes.forEach(s=>s.forEach(q=>{cx+=q[0];cn++;})); cx/=cn||1;
       const cs=Math.cos(ang), sn=Math.sin(ang);
@@ -1663,6 +1679,9 @@ function hero3D(){
       }
     }
   });
+  total=pieces.reduce((s,p)=>s+p.len,0);
+  }
+  build('SOFT MATTER');
   const wall=new THREE.Mesh(new THREE.PlaneGeometry(600,300),new THREE.MeshStandardMaterial({color:0x17171a,roughness:.95}));
   wall.position.z=-2.4; wall.receiveShadow=true; scene.add(wall);
   scene.add(new THREE.HemisphereLight(0xfff1e2,0x0b0b0c,.55));
@@ -1670,7 +1689,6 @@ function hero3D(){
   Object.assign(key.shadow.camera,{left:-40,right:40,top:22,bottom:-22,near:1,far:200}); key.shadow.bias=-.0004; key.shadow.normalBias=.03;
   scene.add(key); scene.add(key.target);
   const rim=new THREE.PointLight(0xc8d4ff,60,120); rim.position.set(-30,18,-1); scene.add(rim);
-  const total=pieces.reduce((s,p)=>s+p.len,0);
   let built=reduce?1:0, t0=null, W=0, H=0;
   function setProgress(k){
     let budget=k*total;
@@ -1701,6 +1719,12 @@ function hero3D(){
     renderer.render(scene,cam); raf=requestAnimationFrame(frame);
   }
   vio.observe(cv);
+  // type a word and it is piped again from the first stroke
+  const form=cv.parentElement.querySelector('.type3d'), input=form.querySelector('input');
+  form.hidden=false;
+  form.addEventListener('submit',ev=>{ ev.preventDefault(); const t=input.value.trim()||'Soft Matter';
+    build(t); cv.setAttribute('aria-label',`${t.toUpperCase()} piped in glossy white chocolate, rendered in 3D`);
+    built=reduce?1:0; t0=null; setProgress(built); W=0; resize(); if(!raf) raf=requestAnimationFrame(frame); });
   return {resize,start(){ resize(); if(!raf) raf=requestAnimationFrame(frame); }};
 }
 
