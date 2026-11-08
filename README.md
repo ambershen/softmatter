@@ -9,11 +9,11 @@ Four material typefaces drawn from everyday objects, in five weights each (Light
 | **Nacre** | Pearls | Pearls knotted on silk in a joined French hand: big pearls on the downstrokes, seed pearls on the hairlines. |
 | **Picot** | Lace ribbon | A lace ribbon pinned into letters, opening into tulle and eyelets where the stroke is thick. |
 
-The site has three views:
+The site opens on the Laundromat; the nav appears after your first wash. Three views:
 
 - **Typefaces**: live specimens with weight, colorway, custom colours and material controls, plus downloads (font family, PNG lettering, glyph pack, @font-face code) on every card.
 - **Soft Matter (demo)**: a fictional winter market site set in the four faces.
-- **Laundromat**: pick one of four washing machines (cocoa, wool, pearl, lace); each wash turns out a one-off object lettered in that face, which you can hang on the line or download.
+- **Laundromat**: type a word on any machine's screen, then pick one of four washing machines (cocoa, wool, pearl, lace); each wash turns out a one-off object lettered in that face, which you can hang on the line or download.
 
 The material renders are procedural (Canvas 2D, plus Three.js for the 3D pieces). The `.otf` files are monochrome outline versions generated from the same data with [opentype.js](https://github.com/opentypejs/opentype.js).
 
