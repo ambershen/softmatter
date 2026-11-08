@@ -23,7 +23,7 @@ Ready-made files are in [`fonts/`](fonts/): `SoftMatter{Purl,Ganache,Nacre,Picot
 
 Purl, Ganache and Picot set in capitals. Nacre keeps upper and lower case and joins like handwriting.
 
-Nacre is traced from [Parisienne](https://fonts.google.com/specimen/Parisienne) by Astigmatic and is released under the SIL Open Font License 1.1; see [`fonts/OFL-Nacre.txt`](fonts/OFL-Nacre.txt).
+All four faces are released under the [SIL Open Font License 1.1](https://openfontlicense.org): you can use them for anything, including commercial work, and modify and redistribute them, but not sell the fonts on their own. Purl, Ganache and Picot: see [`fonts/OFL.txt`](fonts/OFL.txt). Nacre is traced from [Parisienne](https://fonts.google.com/specimen/Parisienne) by Astigmatic and is released under the SIL Open Font License 1.1; see [`fonts/OFL-Nacre.txt`](fonts/OFL-Nacre.txt).
 
 ```css
 @font-face {
